@@ -34,7 +34,7 @@ namespace JUTPS.GameSettings
             get
             {
                 if (!_audioListener || !_audioListener.isActiveAndEnabled)
-                    _audioListener = FindObjectOfType<AudioListener>(includeInactive: false);
+                    _audioListener = FindAnyObjectByType<AudioListener>(FindObjectsInactive.Exclude);
 
                 return _audioListener;
             }
@@ -208,7 +208,7 @@ namespace JUTPS.GameSettings
                 width = (int)(biggestResolution.width * scale),
 
 #if UNITY_2022_3_OR_NEWER
-                    refreshRateRatio = currentResolution.refreshRateRatio
+                refreshRateRatio = currentResolution.refreshRateRatio
 #else
                 refreshRate = currentResolution.refreshRate
 #endif
@@ -219,7 +219,7 @@ namespace JUTPS.GameSettings
             if (!IsMobile)
             {
 #if UNITY_2022_3_OR_NEWER
-                    Screen.SetResolution(targetResolution.width, targetResolution.height, Screen.fullScreenMode, targetResolution.refreshRateRatio);
+                Screen.SetResolution(targetResolution.width, targetResolution.height, Screen.fullScreenMode, targetResolution.refreshRateRatio);
 #else
                 Screen.SetResolution(targetResolution.width, targetResolution.height, Screen.fullScreen, targetResolution.refreshRate);
 #endif
@@ -227,7 +227,7 @@ namespace JUTPS.GameSettings
             else
             {
 #if UNITY_2022_3_OR_NEWER
-                    Screen.SetResolution(targetResolution.height, targetResolution.width, Screen.fullScreenMode, targetResolution.refreshRateRatio);
+                Screen.SetResolution(targetResolution.height, targetResolution.width, Screen.fullScreenMode, targetResolution.refreshRateRatio);
 #else
                 Screen.SetResolution(targetResolution.height, targetResolution.width, Screen.fullScreen, targetResolution.refreshRate);
 #endif

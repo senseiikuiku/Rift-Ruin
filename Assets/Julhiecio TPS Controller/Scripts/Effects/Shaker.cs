@@ -113,7 +113,7 @@ namespace JUTPS.FX
                 }
                 else
                 {
-                    return FindObjectOfType<Shaker>(true);
+                    return FindFirstObjectByType<Shaker>(FindObjectsInactive.Include);
                     //Debug.LogWarning("Camera Current no found");
                     //return null;
                 }

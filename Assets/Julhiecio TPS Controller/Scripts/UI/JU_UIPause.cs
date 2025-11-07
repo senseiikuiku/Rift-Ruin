@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using JU.Editor;
 using JUTPS.CameraSystems;
@@ -180,8 +180,9 @@ namespace JUTPS.UI
         {
             if (!PauseScreen)
                 return;
-                
+
             JUCameraController.LockMouse(Lock: _defaultMouseLock, Hide: !_defaultMouseVisible);
+
             PauseScreen.SetActive(false);
         }
 

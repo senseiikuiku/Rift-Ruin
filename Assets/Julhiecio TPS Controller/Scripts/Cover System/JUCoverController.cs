@@ -67,7 +67,7 @@ namespace JUTPS.CoverSystem
         {
             IsLeftSide = true;
             StartFireModeDuration = TPSCharacter.FireModeMaxTime;
-            camThirdPerson = FindObjectOfType<TPSCameraController>();
+            camThirdPerson = FindAnyObjectByType<TPSCameraController>();
         }
         private void OnEnable()
         {

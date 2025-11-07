@@ -484,7 +484,7 @@ namespace JUTPS.CharacterBrain
 
             if (IsPlayer)
             {
-                MyPivotCamera = FindObjectOfType<JUCameraController>();
+                MyPivotCamera = FindAnyObjectByType<JUCameraController>();
             }
 
             // Get last character spine bone
@@ -1389,7 +1389,7 @@ namespace JUTPS.CharacterBrain
                 }
             }
         }
-        
+
         protected virtual void ApplyRootMotionOnLocomotion()
         {
             if (RootMotion && IsGrounded == true && IsJumping == false && !FiringMode && !IsDriving)
@@ -2170,7 +2170,7 @@ namespace JUTPS.CharacterBrain
             if (IsDead == false) return;
 
             //Reset Camera
-            if (FindObjectOfType<TPSCameraController>() != null) { FindObjectOfType<TPSCameraController>().mCamera.transform.localEulerAngles = Vector3.zero; }
+            if (FindFirstObjectByType<TPSCameraController>() != null) { FindFirstObjectByType<TPSCameraController>().mCamera.transform.localEulerAngles = Vector3.zero; }
 
 
             //Get up

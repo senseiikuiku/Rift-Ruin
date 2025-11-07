@@ -39,7 +39,7 @@ namespace JU.SaveLoad
             get
             {
                 if (!_instance)
-                    _instance = FindObjectOfType<JUSaveLoadModeComponent>();
+                    _instance = FindAnyObjectByType<JUSaveLoadModeComponent>();
 
                 return _instance;
             }

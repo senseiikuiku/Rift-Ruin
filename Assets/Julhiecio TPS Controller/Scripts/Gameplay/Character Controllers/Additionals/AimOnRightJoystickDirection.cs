@@ -23,14 +23,14 @@ namespace JUTPS.ActionScripts
         [Header("Aim Mode Settings")]
         public bool SidescrollerAimMode;
         public float AngleAdjust = 0.1f;
-        public float AngleAdjustThreshold = 1; 
+        public float AngleAdjustThreshold = 1;
         float Xinput, Yinput;
 
 
         [HideInInspector] public bool IsUsingJoystick;
         void Start()
         {
-            cameraController = FindObjectOfType<JUCameraController>();
+            cameraController = FindAnyObjectByType<JUCameraController>();
 
             if (SidescrollerAimMode) // Look to forward (right vector) of 2D view.
             {
