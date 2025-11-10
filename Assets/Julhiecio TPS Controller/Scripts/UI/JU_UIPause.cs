@@ -40,6 +40,7 @@ namespace JUTPS.UI
         /// </summary>
         [Header("Buttons")]
         public Button ContinueButton;
+        public Button PlayAgainButton;
 
         /// <summary>
         /// The pause button on game HUD.
@@ -132,6 +133,7 @@ namespace JUTPS.UI
         {
             if (PauseScreen) PauseScreen.gameObject.SetActive(false);
             if (ContinueButton) ContinueButton.onClick.AddListener(OnPressContinueButton);
+            if (PlayAgainButton) PlayAgainButton.onClick.AddListener(OnPressPlayAgainButton);
             if (PauseButton) PauseButton.onClick.AddListener(OnPressPauseButton);
             if (SettingsButton) SettingsButton.onClick.AddListener(OnPressSettingsButton);
             if (MainMenuButton) MainMenuButton.onClick.AddListener(OnPressMainMenuButton);
@@ -183,12 +185,25 @@ namespace JUTPS.UI
 
             JUCameraController.LockMouse(Lock: _defaultMouseLock, Hide: !_defaultMouseVisible);
 
+            if (UIManager.Instance != null)
+                UIManager.Instance.IsUIWinOrLose(false);
+
             PauseScreen.SetActive(false);
         }
 
         private void OnPressContinueButton()
         {
             JUPauseGame.Continue();
+        }
+
+        private void OnPressPlayAgainButton()
+        {
+            if (JUPauseGame.IsPaused)
+                JUPauseGame.Continue();
+
+            var currentScene = SceneManager.GetActiveScene();
+            SceneManager.LoadScene(currentScene.name);
+            gameObject.SetActive(false);
         }
 
         private void OnPressPauseButton()
