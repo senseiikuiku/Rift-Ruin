@@ -1768,10 +1768,10 @@ MonoBehaviour:
   LocomotionMode: 0
   SetRigidbodyVelocity: 0
   FireModeMaxTime: 1
-  Speed: 5
-  WalkSpeed: 0.5
+  Speed: 6
+  WalkSpeed: 1
   CrouchSpeed: 0.4
-  RunSpeed: 1.7
+  RunSpeed: 2.2
   SprintingSpeedMax: 1.9
   SprintingAcceleration: 2
   SprintingDeceleration: 0.6

@@ -41,10 +41,6 @@ public class UIManager : MonoBehaviour
         }
     }
 
-
-
-
-
     // Hiện UI Win
     public void IsUIWinOrLose(bool isUIWinOrLose)
     {
@@ -63,6 +59,5 @@ public class UIManager : MonoBehaviour
             UIWinOrLose.SetActive(false);
         }
     }
-
 
 }
