@@ -3451,8 +3451,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa2549d042f8b6d41bb6289069865f19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::JUTPS.JUHealth
-  Health: 100
-  MaxHealth: 100
+  Health: 300
+  MaxHealth: 300
   BloodScreenEffect: 0
   BloodHitParticle: {fileID: 6079834135112903994, guid: 62ac816a3081b684092e03f0ec31a51c,
     type: 3}
@@ -4743,6 +4743,21 @@ PrefabInstance:
       propertyPath: m_Size.z
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 3062588181907912959, guid: dbff4f001c46b2447a88eaecdd12bbf6,
+        type: 3}
+      propertyPath: TagsToDamage.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3062588181907912959, guid: dbff4f001c46b2447a88eaecdd12bbf6,
+        type: 3}
+      propertyPath: 'TagsToDamage.Array.data[2]'
+      value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 3062588181907912959, guid: dbff4f001c46b2447a88eaecdd12bbf6,
+        type: 3}
+      propertyPath: 'TagsToDamage.Array.data[3]'
+      value: Vehicle
+      objectReference: {fileID: 0}
     - target: {fileID: 6620032343166823715, guid: dbff4f001c46b2447a88eaecdd12bbf6,
         type: 3}
       propertyPath: m_Name
@@ -4989,6 +5004,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Size.z
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3062588181907912959, guid: dbff4f001c46b2447a88eaecdd12bbf6,
+        type: 3}
+      propertyPath: TagsToDamage.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3062588181907912959, guid: dbff4f001c46b2447a88eaecdd12bbf6,
+        type: 3}
+      propertyPath: 'TagsToDamage.Array.data[2]'
+      value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 3062588181907912959, guid: dbff4f001c46b2447a88eaecdd12bbf6,
+        type: 3}
+      propertyPath: 'TagsToDamage.Array.data[3]'
+      value: Vehicle
       objectReference: {fileID: 0}
     - target: {fileID: 6620032343166823715, guid: dbff4f001c46b2447a88eaecdd12bbf6,
         type: 3}

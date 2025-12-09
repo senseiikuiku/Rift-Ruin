@@ -16,6 +16,10 @@ namespace JUTPS.PhysicsScripts
         public float ExplosionUpForce = 3f;
         public float ExplosionRadious = 5f;
 
+        [Header("Audio")]
+        public AudioClip ExplosionSound;
+        private AudioSource mAudioSource;
+
         [Header("Damage Characters")]
         public bool DamageCharacters = false;
         public LayerMask CharacterLayer;
@@ -25,6 +29,7 @@ namespace JUTPS.PhysicsScripts
 
         void Start()
         {
+            mAudioSource = GetComponent<AudioSource>();
             if (ExplodeOnAwake) Explode();
         }
         /// <summary>
@@ -47,6 +52,23 @@ namespace JUTPS.PhysicsScripts
         /// </summary>
         public void Explode(GameObject owner = null)
         {
+            // Phát âm thanh khi nổ
+            if (ExplosionSound != null && mAudioSource != null)
+            {
+                // Sử dụng PlayOneShot. Nó sẽ tự động lấy Volume từ mAudioSource.
+                mAudioSource.PlayOneShot(ExplosionSound);
+                // Nếu muốn phát ra xa hơn, bạn vẫn có thể dùng PlayClipAtPoint,
+                // nhưng sẽ phải lấy mAudioSource.volume để truyền vào:
+                // AudioSource.PlayClipAtPoint(ExplosionSound, transform.position, mAudioSource.volume); 
+            }
+
+            // === GỌI SINGLETON ĐỂ KÍCH HOẠT RUNG LẮC ===
+            if (CameraShakeManager.Instance != null)
+            {
+                // Lấy bán kính nổ từ chính Explosion.cs và truyền vào hàm TriggerExplosionShake
+                CameraShakeManager.Instance.TriggerExplosionShake(ExplosionRadious);
+            }
+
             Invoke(nameof(doExplosionForce), 0.1f);
             //>>> Character Damaging
             if (DamageCharacters == false) return;

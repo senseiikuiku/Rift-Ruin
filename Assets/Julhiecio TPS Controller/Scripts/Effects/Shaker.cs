@@ -144,6 +144,7 @@ namespace JUTPS.FX
             ShakeEndIntensity = EndIntensity;
             MaxAngle = MaxRotationAngle;
             ShakeIntensity = Intensity;
+            Debug.Log("Sau khi mém boom chạy Shake");
         }
         public float PerlinNoise(float coordinate, float time)
         {

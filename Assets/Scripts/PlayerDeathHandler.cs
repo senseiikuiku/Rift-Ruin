@@ -5,8 +5,18 @@ using System.Collections; // Cần thêm thư viện này để dùng Coroutine
 
 public class PlayerDeathHandler : MonoBehaviour
 {
+    [SerializeField]
     private JUHealth juHealth;
 
+    public static PlayerDeathHandler Instance;
+
+    public bool checkPlayerLive = false;// Kiểm tra player vẫn còn sống
+    private void Awake()
+    {
+        // Đảm bảo chỉ có một KillManager
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
     void Start()
     {
         // Lấy component JUHealth của Player
@@ -21,6 +31,7 @@ public class PlayerDeathHandler : MonoBehaviour
         {
             Debug.LogError("JUHealth component not found on Player! Cannot set up death handling.");
         }
+
     }
 
     private void HandlePlayerDeath()
@@ -31,6 +42,7 @@ public class PlayerDeathHandler : MonoBehaviour
 
     private IEnumerator ShowLoseUIAfterSlowMotion(float delay)
     {
+        checkPlayerLive = true;
         // KÍCH HOẠT HIỆU ỨNG SLOW MOTION
         // JUSlowmotion.DoSlowMotion(0.1f, 3f);
         JUTPS.FX.JUSlowmotion.DoSlowMotion(0.1f, delay);

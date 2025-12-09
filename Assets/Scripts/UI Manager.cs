@@ -52,9 +52,15 @@ public class UIManager : MonoBehaviour
                 JUPauseGame.Pause();
 
             JUCameraController.LockMouse(false, false); // Mở chuột để bấm nút
+
+            // VÔ HIỆU HÓA CHỨC NĂNG PAUSE/CONTINUE TỪ INPUT/CODE KHÁC
+            JUPauseGame.AllowSetPaused = false; // 
         }
         else
         {
+            // KÍCH HOẠT LẠI CHỨC NĂNG PAUSE/CONTINUE KHI TẮT UI
+            JUPauseGame.AllowSetPaused = true; // (Cho trường hợp bạn muốn dùng lại UI này cho Menu tạm dừng)
+
             UITextWinOrLose.text = "";
             UIWinOrLose.SetActive(false);
         }

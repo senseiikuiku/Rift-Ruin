@@ -1,5 +1,12 @@
 fileFormatVersion: 2
 guid: 0ce416d832e7a89469b3bcb7d7dbedd0
+AssetOrigin:
+  serializedVersion: 1
+  productId: 251334
+  packageName: JU TPS 3 - Third Person Shooter GameKit + Vehicle Physics
+  packageVersion: 3.3.68
+  assetPath: Assets/Julhiecio TPS Controller/Scripts/Effects/Shaker.cs
+  uploadId: 806038
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
@@ -9,10 +16,3 @@ MonoImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 251334
-  packageName: JU TPS 3 - Third Person Shooter GameKit + Vehicle Physics
-  packageVersion: 3.3.68
-  assetPath: Assets/Julhiecio TPS Controller/Scripts/Effects/Shaker.cs
-  uploadId: 806038

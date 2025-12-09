@@ -18,7 +18,8 @@ public class KillReporter : MonoBehaviour
     {
         if (KillManager.Instance != null)
         {
-            KillManager.Instance.AddKill();
+            if (PlayerDeathHandler.Instance != null && !PlayerDeathHandler.Instance.checkPlayerLive)
+                KillManager.Instance.AddKill();
 
             // Kiểm tra win ngay sau khi kill được cộng
             if (UIManager.Instance != null &&

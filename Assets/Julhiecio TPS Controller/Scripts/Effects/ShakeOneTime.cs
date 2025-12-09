@@ -16,7 +16,7 @@ namespace JUTPS.FX
         [Range(0, 20)] public float MaxAngle = 15f;
         [Range(0, 20)] public float ShakeDuration = 1f;
         public float ShakeRadious = 50;
-        void Start()
+        public void Start()
         {
             if (ShakeOnAwake)
             {
@@ -30,7 +30,7 @@ namespace JUTPS.FX
                 if (Shaker.GetCurrentCameraInstance() != null)
                 {
                     Shaker shakerToShake = Shaker.GetCurrentCameraInstance();
-
+                    Debug.Log("Khi không có component Shake.cs");
                     float ShakeIntensityByDistance = Mathf.Lerp(1, 0, Vector3.Distance(shakerToShake.transform.position, transform.position) / Radious);
                     shakerToShake.Shake(ShakeSpeed, ShakeDuration, ShakeStartIntensity, ShakeEndIntensity, MaxAngle, ShakeIntensityByDistance * ShakeIntensity);
                 }
@@ -38,6 +38,7 @@ namespace JUTPS.FX
             else
             {
                 ShakerToShake.Shake(ShakeSpeed, ShakeDuration, ShakeStartIntensity, ShakeEndIntensity, MaxAngle, ShakeIntensity);
+                Debug.Log("Chạy hiệu ứng rung lắc.");
             }
         }
     }

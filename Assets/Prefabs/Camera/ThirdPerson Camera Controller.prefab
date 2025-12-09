@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 6552340323875571902}
   - component: {fileID: 8944169780232585678}
   - component: {fileID: 5763107644507381031}
+  - component: {fileID: 7584987082141181415}
+  - component: {fileID: 8824005765603926865}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -174,6 +176,39 @@ MonoBehaviour:
   ShakeSpeed: 2
   AwaysShaking: 0
   IsShaking: 0
+--- !u!114 &7584987082141181415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2447600556057291998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 61efcddaf11a217488298dfc723c5194, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JUTPS.FX.ShakeOneTime
+  ShakerToShake: {fileID: 5763107644507381031}
+  ShakeOnAwake: 1
+  ShakeIntensity: 1
+  ShakeStartIntensity: 50
+  ShakeEndIntensity: 5
+  ShakeSpeed: 5
+  MaxAngle: 15
+  ShakeDuration: 1
+  ShakeRadious: 50
+--- !u!114 &8824005765603926865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2447600556057291998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd09e7588ce285240a55eb6c44fa13bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraShakeManager
 --- !u!1 &6809732765229322597
 GameObject:
   m_ObjectHideFlags: 0

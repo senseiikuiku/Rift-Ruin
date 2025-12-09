@@ -1280,6 +1280,8 @@ GameObject:
   - component: {fileID: 2211277791937294025}
   - component: {fileID: 6972719755031221190}
   - component: {fileID: 763794751514835835}
+  - component: {fileID: 902442016062605993}
+  - component: {fileID: 6523204621447727602}
   m_Layer: 8
   m_Name: Car
   m_TagString: Vehicle
@@ -1530,6 +1532,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: 
         m_MethodName: set_enabled
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 902442016062605993}
+        m_TargetAssemblyTypeName: JUTPS.Utilities.JUAutoDestroy, Assembly-CSharp
+        m_MethodName: TimedDestroyObject
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1800,6 +1814,33 @@ MonoBehaviour:
   RotationMultiplier: 3
   SteeringWheel: {fileID: 5358340693489149269}
   ReferenceWheel: {fileID: 5823179774971550580}
+--- !u!114 &902442016062605993
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4836650002927619449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b28f181aaac6b448995bcd0df949895, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JUTPS.Utilities.JUAutoDestroy
+  SecondsToDestroy: 3
+  DestroyOnStart: 0
+  DestroyOnDie: 0
+--- !u!114 &6523204621447727602
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4836650002927619449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1e7da97e8e892b4c9b4596c767e0d0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CheckVehicleHealth
 --- !u!1 &4908231340684257846
 GameObject:
   m_ObjectHideFlags: 0
