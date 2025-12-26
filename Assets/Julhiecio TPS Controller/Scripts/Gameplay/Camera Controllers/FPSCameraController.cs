@@ -43,7 +43,10 @@ namespace JUTPS.CameraSystems
             if (TargetToFollow.root.TryGetComponent(out JUCharacterController JUcharacter))
             {
                 characterTarget = JUcharacter;
-                characterTarget.LocomotionMode = JUTPS.CharacterBrain.JUCharacterBrain.MovementMode.AwaysInFireMode;
+                // XÓA HOẶC COMMENT DÒNG NÀY ĐI
+                // Dòng này nó tự mặc định bật luôn Fire Mode, không ổn cho FPS
+                // Nó đổi locomotion mode của character thành AlwaysInFireMode
+                // characterTarget.LocomotionMode = JUTPS.CharacterBrain.JUCharacterBrain.MovementMode.AwaysInFireMode;
 
                 // Only use the spline only if there was not a default transform to follow.
                 if (defaultTargetToFollow == null)

@@ -62,12 +62,7 @@ namespace JUTPS.PhysicsScripts
                 // AudioSource.PlayClipAtPoint(ExplosionSound, transform.position, mAudioSource.volume); 
             }
 
-            // === GỌI SINGLETON ĐỂ KÍCH HOẠT RUNG LẮC ===
-            if (CameraShakeManager.Instance != null)
-            {
-                // Lấy bán kính nổ từ chính Explosion.cs và truyền vào hàm TriggerExplosionShake
-                CameraShakeManager.Instance.TriggerExplosionShake(ExplosionRadious);
-            }
+
 
             Invoke(nameof(doExplosionForce), 0.1f);
             //>>> Character Damaging
@@ -113,6 +108,20 @@ namespace JUTPS.PhysicsScripts
                             {
                                 damageInfo.Damage = damage;
                                 character.TakeDamage(damageInfo);
+
+                                // =========================================================================
+                                //                         VỊ TRÍ MỚI CHO RUNG LẮC
+                                // =========================================================================
+                                // Kiểm tra xem nhân vật này có phải là Player hay không
+                                if (hittedCharacter.CompareTag("Player"))
+                                {
+                                    // === GỌI SINGLETON ĐỂ KÍCH HOẠT RUNG LẮC ===
+                                    if (CameraShakeManager.Instance != null)
+                                    {
+                                        // Lấy bán kính nổ từ chính Explosion.cs và truyền vào hàm TriggerExplosionShake
+                                        CameraShakeManager.Instance.TriggerExplosionShake(ExplosionRadious);
+                                    }
+                                }
                             }
                         }
                     }
@@ -124,6 +133,15 @@ namespace JUTPS.PhysicsScripts
                     float damage = (int)Mathf.Lerp(Damage, Damage / 10, Vector3.Distance(health.transform.position, selfPosition) / ExplosionRadious);
                     damageInfo.Damage = damage;
                     health.DoDamage(damageInfo);
+
+                    if (hittedCharacter.CompareTag("Player"))
+                    {
+                        if (CameraShakeManager.Instance != null)
+                        {
+                            // Rung lắc chỉ khi Player bị dính nổ (Trường hợp này không kiểm tra tầm nhìn)
+                            CameraShakeManager.Instance.TriggerExplosionShake(ExplosionRadious);
+                        }
+                    }
                 }
             }
 

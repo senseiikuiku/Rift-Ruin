@@ -61,6 +61,13 @@ namespace JUTPS
         public SurfaceAudiosWithFX[] HitParticlesList;
         public AudioSource HitSoundsAudioSource;
 
+        [Header("Zombie can hit zombie")]
+        public bool FriendlyFire = false;
+
+        [Header("Audio")]
+        public AudioClip HitPlayerSound;
+        private AudioSource mAudioSource;
+
         public bool CanHit { get; private set; }
         public bool IsColliding { get; private set; }
         public Rigidbody Rigidbody { get; private set; }
@@ -96,6 +103,10 @@ namespace JUTPS
 
             if (IgnoreRootColliders)
                 SetupCollidersToIgnore();
+
+            // Lấy AudioSource nếu chưa có
+            if (!mAudioSource)
+                mAudioSource = GetComponent<AudioSource>();
         }
         private void Start()
         {
@@ -139,6 +150,7 @@ namespace JUTPS
                 point = collider.ClosestPoint(point);
 
             CheckCollisionHit(collision.collider, point, normal);
+            Debug.Log("Hit player collisionEnter");
         }
 
         private void OnTriggerEnter(Collider other)
@@ -150,6 +162,8 @@ namespace JUTPS
                 point = other.ClosestPoint(point);
 
             CheckCollisionHit(other, point, normal);
+            Debug.Log("Hit player triggerEnter");
+
         }
 
         private void CheckCollisionHit(Collider other, Vector3 point, Vector3 normal)
@@ -159,6 +173,24 @@ namespace JUTPS
 
             if (!TagsToDamage.Contains(other.tag))
                 return;
+
+            // Nếu không cho phép gây sát thương đồng đội và đối tượng trúng có tag Enemy ở Root
+            if (FriendlyFire == false && other.transform.root.CompareTag("Enemy"))
+            {
+                return; // Bỏ qua, không xử lý các dòng code gây dame bên dưới
+            }
+
+            // KIỂM TRA ĐIỀU KIỆN PHÁT ÂM THANH
+            // Kiểm tra Tag là "Player" VÀ Layer là 9 (Characters layer)
+            if (other.tag == "Player" && other.gameObject.layer == 9)
+            {
+                if (mAudioSource && HitPlayerSound)
+                {
+                    mAudioSource.PlayOneShot(HitPlayerSound);
+                }
+            }
+
+            Debug.Log("Trúng layer= 9 trong hàm CheckCollisionHit");
 
             if (other.gameObject.layer == 9) // Characters layer
             {
@@ -194,7 +226,26 @@ namespace JUTPS
 
                 if (TagsToDamage.Contains(hitCollider.tag))
                 {
+                    // Nếu không cho phép gây sát thương đồng đội và đối tượng trúng có tag Enemy ở Root
+                    if (FriendlyFire == false && hitCollider.transform.root.CompareTag("Enemy"))
+                    {
+                        continue; // Bỏ qua Zombie này, tìm mục tiêu tiếp theo trong tia Raycast
+                    }
+
                     IsColliding = true;
+
+                    // KIỂM TRA ĐIỀU KIỆN PHÁT ÂM THANH
+                    // Kiểm tra Tag là "Player" VÀ Layer là 9
+                    if (hitCollider.tag == "Player" && hitCollider.gameObject.layer == 9)
+                    {
+                        if (mAudioSource && HitPlayerSound)
+                        {
+                            mAudioSource.PlayOneShot(HitPlayerSound);
+                        }
+                    }
+                    Debug.Log("Trúng layer= 9 trong hàm CheckRaycastHit");
+
+
                     _oldHit = hitCollider;
                     DoDamage(hitCollider, hits[i].point, hits[i].normal, Damage, HitParticlesList, HitSoundsAudioSource);
                     Invoke(nameof(DisableCollidedState), 0.1f);

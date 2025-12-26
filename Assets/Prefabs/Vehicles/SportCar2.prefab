@@ -106,7 +106,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4622371760059904654
 Transform:
   m_ObjectHideFlags: 0
@@ -402,13 +402,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1013407178666012632}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: -0.6255741, y: 0.20355558, z: 1.1801186}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 588170035367942787}
-  m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &342966182577771394
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -859,13 +859,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4540704002802245466}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: 0.45100906, w: 0.8925194}
-  m_LocalPosition: {x: -0.8865, y: 0.3024, z: 1.1065}
+  m_LocalRotation: {x: 0.25641376, y: -0.12957132, z: 0.43199587, w: 0.85489345}
+  m_LocalPosition: {x: -0.2962, y: 0.0422, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 588170035367942787}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 53.617}
+  m_LocalEulerAnglesHint: {x: 33.392, y: 0, z: 53.617}
 --- !u!114 &9189913293036250071
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1051,13 +1051,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6366153896527442089}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0.57473063, w: 0.8183427}
-  m_LocalPosition: {x: -0.372, y: 0.315, z: 1.104}
+  m_LocalRotation: {x: 0.23510398, y: 0.16511741, z: -0.5505046, w: 0.7838412}
+  m_LocalPosition: {x: 0.279, y: 0.047, z: -0.004}
   m_LocalScale: {x: -1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 588170035367942787}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -70.162}
+  m_LocalEulerAnglesHint: {x: 33.392, y: 0, z: -70.162}
 --- !u!114 &6257073489180236964
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1091,7 +1091,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &588170035367942787
 Transform:
   m_ObjectHideFlags: 0
@@ -1100,8 +1100,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6415318608803145281}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.61715835, y: -0, z: -0, w: 0.78683895}
+  m_LocalPosition: {x: -0.6229992, y: 0.22579515, z: 1.220686}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1109,7 +1109,7 @@ Transform:
   - {fileID: 4258405948247941781}
   - {fileID: 7298225156749908025}
   m_Father: {fileID: 1621422704732850943}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -76.218, y: 0, z: 0}
 --- !u!1 &7478977211730955062
 GameObject:
   m_ObjectHideFlags: 0
@@ -1658,7 +1658,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::JUTPS.VehicleSystem.JUVehicleSteerWheel
   RotationMultiplier: 1
-  SteeringWheel: {fileID: 4622371760059904654}
+  SteeringWheel: {fileID: 588170035367942787}
   ReferenceWheel: {fileID: 1476517667645893392}
 --- !u!114 &4308730967643797144
 MonoBehaviour:

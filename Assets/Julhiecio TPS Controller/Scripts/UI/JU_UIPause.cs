@@ -15,6 +15,8 @@ namespace JUTPS.UI
     /// </summary>
     public class JU_UIPause : MonoBehaviour
     {
+        public static JU_UIPause Instance;
+
         private bool _defaultMouseVisible;
         private bool _defaultMouseLock;
 
@@ -40,7 +42,7 @@ namespace JUTPS.UI
         /// </summary>
         [Header("Buttons")]
         public Button ContinueButton;
-        public Button PlayAgainButton;
+        public Button[] PlayAgainButton;
 
         /// <summary>
         /// The pause button on game HUD.
@@ -82,6 +84,9 @@ namespace JUTPS.UI
 
         private void Awake()
         {
+            if (Instance == null) Instance = this;
+            else Destroy(gameObject);
+
             Setup();
 
             // Can't do it during the OnPause because the editor shows the cursor on press Escape, this break the logic.
@@ -133,7 +138,17 @@ namespace JUTPS.UI
         {
             if (PauseScreen) PauseScreen.gameObject.SetActive(false);
             if (ContinueButton) ContinueButton.onClick.AddListener(OnPressContinueButton);
-            if (PlayAgainButton) PlayAgainButton.onClick.AddListener(OnPressPlayAgainButton);
+            // Vòng lặp cho Mảng Nút PlayAgain
+            if (PlayAgainButton != null)
+            {
+                foreach (Button button in PlayAgainButton)
+                {
+                    if (button != null)
+                    {
+                        button.onClick.AddListener(OnPressPlayAgainButton);
+                    }
+                }
+            }
             if (PauseButton) PauseButton.onClick.AddListener(OnPressPauseButton);
             if (SettingsButton) SettingsButton.onClick.AddListener(OnPressSettingsButton);
             if (MainMenuButton) MainMenuButton.onClick.AddListener(OnPressMainMenuButton);
@@ -204,6 +219,17 @@ namespace JUTPS.UI
             var currentScene = SceneManager.GetActiveScene();
             SceneManager.LoadScene(currentScene.name);
             gameObject.SetActive(false);
+        }
+
+        // Ẩn nút PlayAgain trong phân Paused nếu game đã thua hoặc thắng
+        public void SetPlayAgainButtonVisible(bool isVisible)
+        {
+            // Đảm bảo mảng tồn tại và có ít nhất 1 phần tử
+            if (PlayAgainButton != null && PlayAgainButton.Length > 0 && PlayAgainButton[0] != null)
+            {
+                // Kiểm soát trạng thái Active của nút [0]
+                PlayAgainButton[0].gameObject.SetActive(isVisible);
+            }
         }
 
         private void OnPressPauseButton()

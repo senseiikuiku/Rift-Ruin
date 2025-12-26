@@ -688,6 +688,10 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 421594941603443359}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 599419b56123cbc47addd388262465ac,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6227162704804027158}
     - targetCorrespondingSourceObject: {fileID: 1082271958561512970, guid: 599419b56123cbc47addd388262465ac,
         type: 3}
       insertIndex: -1
@@ -1861,6 +1865,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5479cab4ae27bc458de9e8bbcd05269, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KillReporter
+--- !u!114 &6227162704804027158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2030574869096243759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ce799922ded21d42a3244e57611c180, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZombieRoarController
+  ZombieAI: {fileID: 1594389402713708669}
+  RoarAudioSource: {fileID: 8558191181027644600}
+  AmbientRoarAudioClipList:
+  - {fileID: 8300000, guid: ce1cbdaef88f12e49a01fca3b323935b, type: 3}
+  AggressiveRoarAudioClipList:
+  - {fileID: 8300000, guid: d31af09d95e6abd4faa3cf00959bcc30, type: 3}
+  MinAmbientRoarInterval: 5
+  MaxAmbientRoarInterval: 15
 --- !u!1 &2299760891499954548 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1082271958561512970, guid: 599419b56123cbc47addd388262465ac,

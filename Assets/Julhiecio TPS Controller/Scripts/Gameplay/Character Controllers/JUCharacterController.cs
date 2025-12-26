@@ -1064,12 +1064,12 @@ namespace JUTPS
                 LookAtIK(LookingPosition, LookingIntensity * LookWeightIK, BodyWeight, HeadIKBodyWeight);
             }
         }
-        
+
         private void OnAnimatorMove()
         {
             ApplyRootMotionOnLocomotion();
         }
-        
+
     }
 
 }

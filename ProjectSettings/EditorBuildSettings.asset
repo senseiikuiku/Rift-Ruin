@@ -34,13 +34,16 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Julhiecio TPS Controller/Demos/Demo Scenes/Cover Demo/Cover Demo.unity
     guid: 0f2c9e86d40716944b9f942b6eed8c06
-  - enabled: 0
-    path: Assets/Scene/ModeFPS.unity
-    guid: e7bc2e1ac63b89b40a3cf1b890fa7ce0
+  - enabled: 1
+    path: Assets/Scene/MenuGame.unity
+    guid: 4a7144bd82f08ab4ba5b0871f553b478
   - enabled: 1
     path: Assets/Scene/ModeTPS.unity
     guid: 8d0e1ec9a73193542bf5d4753ba8338e
-  - enabled: 0
+  - enabled: 1
+    path: Assets/Scene/ModeFPS.unity
+    guid: e7bc2e1ac63b89b40a3cf1b890fa7ce0
+  - enabled: 1
     path: Assets/Scene/ModeGravitySwitch.unity
     guid: a750a5c4ce773fb4f9e6f0ac2c2557b5
   - enabled: 0

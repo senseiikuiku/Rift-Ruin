@@ -20,8 +20,19 @@ namespace JUTPS.GravitySwitchSystem
         void Update()
         {
             Collider[] colliders;
-            JUGravity.SimulateGravityBox(transform.position, transform.lossyScale, transform.rotation, -transform.up, GravityForce, AlignRigidbodies, AlignmentForce, DistanceToStopAligment, out colliders, TagsToIgnore);
-            if (AlignCharacters) JUGravity.AlignJUTPSCharacterUpOrientation(colliders, transform.up);
+            JUGravity.SimulateGravityBox(
+                transform.position,
+                transform.lossyScale,
+                transform.rotation,
+                -transform.up,
+                GravityForce,
+                AlignRigidbodies,
+                AlignmentForce,
+                DistanceToStopAligment,
+                out colliders,
+                TagsToIgnore);
+            if (AlignCharacters)
+                JUGravity.AlignJUTPSCharacterUpOrientation(colliders, transform.up);
         }
 #if UNITY_EDITOR
         private void OnDrawGizmos()
