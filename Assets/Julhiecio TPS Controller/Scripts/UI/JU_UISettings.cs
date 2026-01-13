@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using JUTPS.InputEvents;
@@ -300,12 +300,21 @@ namespace JUTPS.UI
         /// </summary>
         public void Close()
         {
-            // Is already inactive.
+            // Kiểm tra nếu object đang Active thì mới xử lý
             if (!gameObject.activeSelf)
                 return;
 
-            gameObject.SetActive(false);
-            OnClose.Invoke();
+            // Thay vì dùng SetActive(false), ta gọi JU_UIPause để thực hiện Fade
+            if (JUTPS.UI.JU_UIPause.Instance != null)
+            {
+                // Gọi Event để JU_UIPause biết và bắt đầu giảm Alpha về 0
+                OnClose.Invoke();
+            }
+            else
+            {
+                // Trường hợp phòng hờ nếu không tìm thấy JU_UIPause thì mới tắt
+                gameObject.SetActive(false);
+            }
         }
     }
 }

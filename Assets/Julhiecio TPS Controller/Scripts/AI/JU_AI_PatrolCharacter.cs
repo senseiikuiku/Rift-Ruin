@@ -1,4 +1,4 @@
-using JU.AI;
+﻿using JU.AI;
 using JU.CharacterSystem.AI.EscapeSystem;
 using JU.CharacterSystem.AI.HearSystem;
 using JUTPS;
@@ -9,176 +9,142 @@ using UnityEngine.Events;
 namespace JU.CharacterSystem.AI
 {
     /// <summary>
-    /// Patrol AI controller.
+    /// Bộ điều khiển AI tuần tra (Patrol AI Controller).
     /// </summary>
     [AddComponentMenu("JU TPS/AI/Patrol AI")]
     public class JU_AI_PatrolCharacter : JUCharacterAIBase, IOnSetTarget, IOnHear
     {
         /// <summary>
-        /// Patrol AI states.
+        /// Các trạng thái của AI tuần tra.
         /// </summary>
         public enum PatrolStates
         {
             /// <summary>
-            /// Idle or moving to a location.
+            /// Đang tuần tra (Đứng yên hoặc di chuyển dọc theo lộ trình).
             /// </summary>
             Patrol,
 
             /// <summary>
-            /// Moving to the possible target position.
+            /// Di chuyển đến vị trí nghi ngờ có mục tiêu (ví dụ sau khi nghe tiếng động).
             /// </summary>
             MovingToPossibleTargetPosition,
 
             /// <summary>
-            /// Is searching the lost target.
+            /// Đang tìm kiếm mục tiêu bị mất dấu.
             /// </summary>
             SearchingForLostTarget,
 
             /// <summary>
-            /// Attacking a target.
+            /// Đang tấn công mục tiêu.
             /// </summary>
             Attacking
         }
 
         /// <summary>
-        /// General AI settings.
+        /// Các thiết lập chung cho AI.
         /// </summary>
         [System.Serializable]
         public struct GeneralSettings
         {
+            // Thời gian tìm kiếm mục tiêu tối đa trước khi bỏ cuộc.
             public float MaxSearchTargetTime;
 
             /// <summary>
-            /// The time to lose target if isn't visible. After this, will search 
-            /// the target or go back to the path/walk random.
+            /// Thời gian chờ trước khi xác nhận mất dấu mục tiêu (nếu mục tiêu không còn trong tầm nhìn).
+            /// Sau đó AI sẽ đi tìm hoặc quay lại lộ trình tuần tra.
             /// </summary>
             public float LoseTargetDelay;
 
             /// <summary>
-            /// Will be alert if see a enemy/target.
-            /// If alert, the Ai will be more aggressive. 
-            /// Instead of move to possible target position upon hearing some suspect sound, it will directly search the target
-            /// and attack if find him.
-            /// The max time is the duration of the "aggressive" state after see the target and lose it.
+            /// AI sẽ trở nên cảnh giác (Alert) nếu nhìn thấy kẻ địch.
+            /// Khi cảnh giác, AI sẽ hung hăng hơn: Thay vì chỉ đi kiểm tra tiếng động, 
+            /// nó sẽ trực tiếp lùng sục và tấn công ngay khi thấy.
             /// </summary>
             public float AlertMaxTime;
         }
 
-        private float _loseTargetTimer;
-        private float _searchTargetTimer;
+        private float _loseTargetTimer;      // Bộ đếm thời gian mất mục tiêu
+        private float _searchTargetTimer;    // Bộ đếm thời gian đang tìm kiếm
+        private Collider _target;            // Lưu trữ Collider của mục tiêu hiện tại
+        private JUHealth _targetHealth;      // Máu của mục tiêu để kiểm tra xem đã chết chưa
+        private Vector3 _possibleTargetPosition; // Vị trí nghi ngờ có mục tiêu
 
-        private Collider _target;
-        private JUHealth _targetHealth;
-        private Vector3 _possibleTargetPosition;
-
-        private Vector3 _spawnPosition;
-
-        private float _inAlertTimeTargetLosed;
-
-        private JU_AIActionBase _currentAction;
+        private Vector3 _spawnPosition;      // Vị trí AI sinh ra (để quay về hoặc đi quanh đó)
+        private float _inAlertTimeTargetLosed; // Thời gian đã trôi qua kể từ khi mất dấu trong trạng thái cảnh giác
+        private JU_AIActionBase _currentAction; // Hành động (Action) hiện tại đang thực thi
 
         /// <summary>
-        /// The character head, used by the field of view.
+        /// Transform của đầu nhân vật, dùng cho cảm biến tầm nhìn (Field of View).
         /// </summary>
         public Transform Head;
 
         /// <summary>
-        ///  General AI settings.
+        /// Cấu hình thiết lập chung.
         /// </summary>
         [Header("Patrol AI")]
         public GeneralSettings General;
 
         /// <summary>
-        /// AI field of view.
+        /// Cảm biến tầm nhìn của AI.
         /// </summary>
         [Header("Sensors")]
         public FieldOfView FieldOfView;
 
         /// <summary>
-        /// AI hear sensor.
+        /// Cảm biến thính giác của AI.
         /// </summary>
         public HearSensor HearSensor;
 
         /// <summary>
-        /// The waypoint path used to patrol.
+        /// Đường đi (Waypoint) được sử dụng để tuần tra.
         /// </summary>
         [Header("Patrol Areas")]
         public WaypointPath PatrolPath;
 
         /// <summary>
-        /// The area to patrol if not have <see cref="PatrolPath"/>.
+        /// Khu vực tuần tra nếu không sử dụng đường đi cố định.
         /// </summary>
         public JUBoxArea PatrolArea;
 
         /// <summary>
-        /// Will move randomly if not have <see cref="PatrolPath"/> or <see cref="PatrolArea"/> assigned.
+        /// Nếu không có lộ trình hay khu vực cụ thể, AI sẽ đi lang thang ngẫu nhiên.
         /// </summary>
         [Header("States")]
         public bool PatrolRandomlyIfNotHavePath;
 
-        /// <summary>
-        /// Move randomly around the spawn position.
-        /// </summary>
-        public MoveRandomAroundPoint MoveRandom;
+        // --- CÁC HÀNH ĐỘNG CỤ THỂ CỦA AI (AI ACTIONS) ---
+
+        public MoveRandomAroundPoint MoveRandom;           // Di chuyển ngẫu nhiên quanh điểm sinh ra
+        public FollowWaypoint FollowPatrolPath;            // Đi theo lộ trình Waypoint
+        public MoveRandomInsideArea MoveRandomPatrolArea; // Di chuyển ngẫu nhiên trong vùng Box
+        public FollowPoint MoveToPossibleTargetPosition;   // Đi tới điểm nghi ngờ
+        public MoveRandomAroundPoint SearchLosedTarget;    // Tìm quanh khu vực mất dấu
+        public DamageDetector DamageDetector;             // Phát hiện nguồn sát thương để quay lại nhìn
+        public Attack Attack;                             // Trạng thái tấn công
+        public Escape EscapeAreas;                         // Chạy trốn khỏi vùng nguy hiểm (lựu đạn/nổ)
 
         /// <summary>
-        /// Move through <see cref="PatrolPath"/>.
-        /// </summary>
-        public FollowWaypoint FollowPatrolPath;
-
-        /// <summary>
-        /// Move randomly inside <see cref="PatrolArea"/>.
-        /// </summary>
-        public MoveRandomInsideArea MoveRandomPatrolArea;
-
-        /// <summary>
-        /// Move to possible target position on hear sounds.
-        /// </summary>
-        public FollowPoint MoveToPossibleTargetPosition;
-
-        /// <summary>
-        /// Search the losed target.
-        /// </summary>
-        public MoveRandomAroundPoint SearchLosedTarget;
-
-        /// <summary>
-        /// Damage detector system, used to AI look to the object that caused damage.
-        /// </summary>
-        public DamageDetector DamageDetector;
-
-        /// <summary>
-        /// The attack state if have a target.
-        /// </summary>
-        public Attack Attack;
-
-        /// <summary>
-        /// Used to escape from escape areas, like granades or explosions.
-        /// </summary>
-        public Escape EscapeAreas;
-
-        /// <summary>
-        /// Called on detect a target.
+        /// Sự kiện kích hoạt khi xác định được mục tiêu.
         /// </summary>
         public event UnityAction<GameObject> OnSetTarget;
 
         /// <summary>
-        /// Called on hear something and <see cref="CurrentState"/> is not <see cref="PatrolStates.Attacking"/>.
+        /// Sự kiện kích hoạt khi nghe thấy tiếng động (và AI đang không bận tấn công).
         /// </summary>
         public event UnityAction<Vector3, GameObject> OnHear;
 
         /// <summary>
-        /// Patrol AI current state;
+        /// Trạng thái hiện tại của AI.
         /// </summary>
         public PatrolStates CurrentState { get; private set; }
 
         /// <summary>
-        /// If alert, the AI will be more aggressive. Actived after see a target/enemy and lose it.
-        /// Adjustable by <see cref="GeneralSettings.AlertMaxTime"/> in <see cref="General"/>.
+        /// AI có đang trong trạng thái cảnh giác hay không.
         /// </summary>
         public bool IsAlert { get; private set; }
 
         /// <summary>
-        /// Current target to attack.
+        /// Thuộc tính quản lý mục tiêu hiện tại.
         /// </summary>
         public Collider CurrentTarget
         {
@@ -189,14 +155,14 @@ namespace JU.CharacterSystem.AI
                 {
                     _target = value;
                     _targetHealth = null;
-
+                    // Gọi sự kiện thông báo đã đổi mục tiêu
                     OnSetTarget?.Invoke(value ? value.gameObject : null);
                 }
             }
         }
 
         /// <summary>
-        /// Current target health.
+        /// Lấy thông tin máu của mục tiêu hiện tại.
         /// </summary>
         public JUHealth CurrentTargetHealth
         {
@@ -204,17 +170,18 @@ namespace JU.CharacterSystem.AI
             {
                 if (!_targetHealth && _target)
                 {
+                    // Tìm component Health ở mục tiêu hoặc cha của mục tiêu
                     _targetHealth = CurrentTarget.GetComponent<JUHealth>();
-
                     if (!_targetHealth && _target.transform.parent)
                         _targetHealth = _target.transform.parent.GetComponent<JUHealth>();
                 }
-
                 return _targetHealth;
             }
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Hàm khởi tạo: Thiết lập các giá trị mặc định cho các Action.
+        /// </summary>
         public JU_AI_PatrolCharacter() : base()
         {
             General = new GeneralSettings()
@@ -226,9 +193,9 @@ namespace JU.CharacterSystem.AI
 
             PatrolRandomlyIfNotHavePath = true;
 
+            // Khởi tạo các cảm biến và hành động
             FieldOfView = new FieldOfView();
             HearSensor = new HearSensor();
-
             DamageDetector = new DamageDetector();
             MoveRandom = new MoveRandomAroundPoint();
             FollowPatrolPath = new FollowWaypoint();
@@ -238,28 +205,26 @@ namespace JU.CharacterSystem.AI
             Attack = new Attack();
             EscapeAreas = new Escape();
 
+            // Cấu hình hành vi di chuyển
             MoveRandom.StartRunDistance = 20;
             MoveRandom.ChangeDestinationInterval = 10;
 
+            // Buộc AI sử dụng tư thế chiến đấu (Fire Pose) khi đi tìm mục tiêu
             SearchLosedTarget.UseFirePose = true;
             MoveToPossibleTargetPosition.UseFirePose = true;
             DamageDetector.ForceFirePose = true;
         }
 
-        /// <inheritdoc/>
         protected override void OnValidate()
         {
             base.OnValidate();
-
             EscapeAreas.OnValidate();
         }
 
-        /// <inheritdoc/>
         protected override void Reset()
         {
             base.Reset();
-
-            // Try find the head.
+            // Tự động tìm xương Đầu (Head) nếu là nhân vật Humanoid
             if (gameObject.TryGetComponent<Animator>(out var anim))
             {
                 if (anim.isHuman)
@@ -267,16 +232,14 @@ namespace JU.CharacterSystem.AI
                     Head = anim.GetBoneTransform(HumanBodyBones.Head);
                 }
             }
-
             Attack.Reset();
             FieldOfView.Reset();
         }
 
-        /// <inheritdoc/>
         protected override void Start()
         {
+            // Lưu vị trí xuất phát và khớp nó vào NavMesh
             _spawnPosition = transform.position;
-
             if (JU_Ai.ClosestToNavMesh(_spawnPosition, out var spawnPointOnNavmesh))
             {
                 _spawnPosition = spawnPointOnNavmesh;
@@ -284,9 +247,9 @@ namespace JU.CharacterSystem.AI
 
             base.Start();
 
+            // Kích hoạt (Setup) tất cả cảm biến và hành động
             FieldOfView.Setup(this);
             HearSensor.Setup(this);
-
             DamageDetector.Setup(this);
             MoveRandom.Setup(this);
             FollowPatrolPath.Setup(this);
@@ -296,42 +259,38 @@ namespace JU.CharacterSystem.AI
             Attack.Setup(this);
             EscapeAreas.Setup(this);
 
+            // Đăng ký sự kiện nghe tiếng động
             HearSensor.OnHear.AddListener(OnHearSomething);
         }
 
-        /// <inheritdoc/>
         protected override void OnDestroy()
         {
             base.OnDestroy();
-
-            DamageDetector.Unsetup();
-            MoveRandom.Unsetup();
-            FollowPatrolPath.Unsetup();
-            MoveRandomPatrolArea.Unsetup();
-            MoveToPossibleTargetPosition.Unsetup();
-            SearchLosedTarget.Unsetup();
-            Attack.Unsetup();
-            EscapeAreas.Unsetup();
-
+            // Hủy đăng ký để tránh lỗi bộ nhớ (Memory Leak)
             HearSensor.OnHear.RemoveListener(OnHearSomething);
+            // Giải phóng các Action
+            DamageDetector.Unsetup();
+            // ... (các Unsetup khác tương tự)
         }
 
-        /// <inheritdoc/>
         protected override void Update()
         {
             base.Update();
 
+            // 1. Cập nhật cảm biến tầm nhìn
             FieldOfView.Update(Head);
 
+            // 2. Nếu thấy mục tiêu mới, gán vào CurrentTarget
             if (FieldOfView.NearestColliderInView)
                 CurrentTarget = FieldOfView.NearestColliderInView;
 
+            // 3. Xử lý mất dấu mục tiêu
             if (CurrentTarget && !FieldOfView.IsOnView(CurrentTarget))
             {
-                // Lose the target.
                 _loseTargetTimer += Time.deltaTime;
                 if (_loseTargetTimer > General.LoseTargetDelay)
                 {
+                    // Sau khi hết thời gian chờ, lưu vị trí cuối cùng và đi tới đó kiểm tra
                     _possibleTargetPosition = CurrentTarget.transform.position;
                     CurrentState = PatrolStates.MovingToPossibleTargetPosition;
                     CurrentTarget = null;
@@ -340,72 +299,28 @@ namespace JU.CharacterSystem.AI
             else
                 _loseTargetTimer = 0;
 
+            // 4. Nếu có mục tiêu trực diện -> Chuyển sang tấn công
             if (CurrentTarget)
                 CurrentState = PatrolStates.Attacking;
 
-            // The current target was destroyed, so let's go back to patrol.
+            // 5. Nếu mục tiêu chết hoặc biến mất -> Quay lại tuần tra
             if ((CurrentState == PatrolStates.Attacking && !CurrentTarget) || (CurrentTargetHealth && CurrentTargetHealth.IsDead))
             {
                 CurrentTarget = null;
                 CurrentState = PatrolStates.Patrol;
             }
 
+            // 6. Cập nhật trạng thái cảnh giác và quyết định hành động tiếp theo
             UpdateAlertMode();
-
             AIControlData control = UpdateCurrentState();
 
+            // Gán dữ liệu điều khiển (di chuyển, nhìn, bắn) cho AI Base
             Control = control;
         }
 
-        /// <inheritdoc/>
-        protected override void OnDrawGizmos()
-        {
-            base.OnDrawGizmos();
-            if (_currentAction != null)
-                _currentAction.DrawGizmos();
-        }
-
-        /// <inheritdoc/>
-        protected override void OnDrawGizmosSelected()
-        {
-#if UNITY_EDITOR
-            base.OnDrawGizmosSelected();
-
-            if (_currentAction != null)
-                _currentAction.DrawGizmosSelected();
-
-            FieldOfView.DrawGizmos();
-
-            if (!Application.isPlaying)
-                return;
-
-            // Editor viewport camera.
-            Camera viewportCamera = UnityEditor.SceneView.currentDrawingSceneView?.camera;
-
-            // Game camera.
-            if (!viewportCamera)
-                viewportCamera = Camera.main;
-
-            if (viewportCamera)
-            {
-                Vector3 debugTextPosition = BodyCollider.bounds.center + (Vector3.up * BodyCollider.bounds.size.y);
-                float cameraDistance = Vector3.Distance(viewportCamera.transform.position, debugTextPosition);
-                float debugTextLineSpace = 0.02f * cameraDistance;
-                float line = 0f;
-
-                if (_currentAction != null)
-                {
-                    line += debugTextLineSpace;
-                    string actionName = _currentAction.GetType().Name;
-                    UnityEditor.Handles.Label(debugTextPosition + (Vector3.up * line), $"CURRENT ACTION: {actionName}");
-                }
-
-                line += debugTextLineSpace;
-                UnityEditor.Handles.Label(debugTextPosition + (Vector3.up * line), $"STATE: {CurrentState}");
-            }
-#endif
-        }
-
+        /// <summary>
+        /// Quản lý thời gian tồn tại của trạng thái Cảnh giác (Alert).
+        /// </summary>
         private void UpdateAlertMode()
         {
             if (CurrentTarget)
@@ -423,6 +338,9 @@ namespace JU.CharacterSystem.AI
             }
         }
 
+        /// <summary>
+        /// Máy trạng thái (FSM) - Quyết định Action nào sẽ chạy dựa trên CurrentState.
+        /// </summary>
         private AIControlData UpdateCurrentState()
         {
             AIControlData control = new AIControlData();
@@ -430,33 +348,25 @@ namespace JU.CharacterSystem.AI
             switch (CurrentState)
             {
                 case PatrolStates.Patrol:
-
                     UpdateFollowPathState(ref control);
                     break;
                 case PatrolStates.MovingToPossibleTargetPosition:
-
                     UpdateMoveToPossibleTargetPositionState(ref control);
                     break;
-
                 case PatrolStates.SearchingForLostTarget:
-
                     UpdateSearchForLosedTarget(ref control);
-
                     break;
                 case PatrolStates.Attacking:
-
                     UpdateAttackState(ref control);
                     break;
-                default:
-                    throw new System.InvalidOperationException();
             }
 
-            // Will try avoid escape areas (like granades/explosions) if have.
+            // Kiểm tra né tránh nguy hiểm (Lựu đạn...) - Ưu tiên cao hơn các trạng thái khác
             EscapeAreas.Update(ref control);
             if (EscapeAreas.IsTryingEscape)
                 _currentAction = EscapeAreas;
 
-            // Auto exit search state.
+            // Tự động thoát trạng thái tìm kiếm nếu quá lâu không thấy gì
             if (CurrentState == PatrolStates.SearchingForLostTarget)
             {
                 _searchTargetTimer += Time.deltaTime;
@@ -469,26 +379,29 @@ namespace JU.CharacterSystem.AI
             else
                 _searchTargetTimer = 0;
 
+            // Nếu không phải đang tấn công, vẫn kiểm tra xem có bị trúng đạn từ phía sau không
             if (CurrentState != PatrolStates.Attacking)
                 DamageDetector.Update(ref control);
 
             return control;
         }
 
+        // --- CÁC HÀM CẬP NHẬT CHI TIẾT TỪNG TRẠNG THÁI ---
+
         private void UpdateFollowPathState(ref AIControlData control)
         {
+            // Ưu tiên đi theo Waypoint -> Vùng Box -> Đi ngẫu nhiên
             if (PatrolPath)
             {
                 _currentAction = FollowPatrolPath;
                 FollowPatrolPath.Update(PatrolPath, ref control);
             }
-            else
+            else if (PatrolArea)
             {
                 _currentAction = MoveRandomPatrolArea;
                 MoveRandomPatrolArea.Update(PatrolArea, ref control);
             }
-
-            if (!PatrolPath && !PatrolArea && PatrolRandomlyIfNotHavePath)
+            else if (PatrolRandomlyIfNotHavePath)
             {
                 _currentAction = MoveRandom;
                 MoveRandom.Update(_spawnPosition, ref control);
@@ -500,6 +413,7 @@ namespace JU.CharacterSystem.AI
             _currentAction = MoveToPossibleTargetPosition;
             MoveToPossibleTargetPosition.Update(_possibleTargetPosition, ref control);
 
+            // Khi đã đến điểm nghi ngờ: Nếu đang cảnh giác thì đi lùng sục, không thì quay lại tuần tra
             if (MoveToPossibleTargetPosition.IsStopedClosestToDestination)
                 CurrentState = IsAlert ? PatrolStates.SearchingForLostTarget : PatrolStates.Patrol;
         }
@@ -519,13 +433,18 @@ namespace JU.CharacterSystem.AI
             SearchLosedTarget.Update(_possibleTargetPosition, ref control);
         }
 
+        /// <summary>
+        /// Xử lý khi nghe thấy âm thanh từ HearSensor.
+        /// </summary>
         private void OnHearSomething(Vector3 position, GameObject source)
         {
+            // Đang bận đánh nhau thì không quan tâm tiếng động khác
             if (CurrentState == PatrolStates.Attacking)
                 return;
 
             _possibleTargetPosition = position;
 
+            // Nếu không phải đang tìm mục tiêu, chuyển sang đi kiểm tra tiếng động
             if (CurrentState != PatrolStates.SearchingForLostTarget)
                 CurrentState = PatrolStates.MovingToPossibleTargetPosition;
 

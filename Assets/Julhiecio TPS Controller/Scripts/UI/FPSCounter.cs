@@ -11,7 +11,7 @@ namespace JUTPS.Utilities
         {
             InvokeRepeating("UpdateFrameRateOnScreen", 0, RefreshRate);
 
-            //if that component does not have a text assigned, it will look locally for a text component.
+            // Nếu FPSText chưa được gán trong Inspector, cố gắng lấy component Text trên cùng GameObject
             if (FPSText == null && GetComponent<Text>() != null) { FPSText = GetComponent<Text>(); }
         }
         public void UpdateFrameRateOnScreen()
@@ -23,7 +23,7 @@ namespace JUTPS.Utilities
             }
         }
         /// <summary>
-        /// Returns the value of the FPS(Frames per second) at the time it is called
+        /// Lấy số khung hình trên giây hiện tại
         /// </summary>
         /// <returns></returns>
         public static int GetFrameRate()

@@ -1166,8 +1166,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1877632868373938572}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.48821586, y: 0.05070874, z: 0.829182, w: 0.26745299}
-  m_LocalPosition: {x: -0.11743361, y: 0.012795582, z: 0.1805153}
+  m_LocalRotation: {x: 0.48821583, y: 0.050708693, z: 0.829182, w: 0.267453}
+  m_LocalPosition: {x: -0.117433436, y: 0.012795523, z: 0.18051559}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3741,7 +3741,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 715698226d8df724785ab9db90d2775f, type: 3}
     - {fileID: 8300000, guid: 78e2ce3c64e256742a7439d674f2c5d7, type: 3}
     - {fileID: 8300000, guid: 1f97e96c6a43950469f0841f3a2dd8eb, type: 3}
-    Effects: []
+    Effects:
+    - {fileID: 3764143262606855481, guid: 5447f23ae9a65134ba943453992b5a81, type: 3}
     EffectsLifeTime: 5
   - SurfaceTag: Stone
     AudioClips:
@@ -12149,7 +12150,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 105217
   BulletsPerMagazine: 38
-  TotalBullets: 300
+  TotalBullets: 18
   BulletsAmounts: 38
   NumberOfShotgunBulletsPerShot: 12
   InfiniteAmmo: 0
@@ -22453,7 +22454,7 @@ Transform:
   m_GameObject: {fileID: 8620024495685157096}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.00000043213367, y: 0.045999527, z: 0.36300093}
+  m_LocalPosition: {x: 0.00000083073974, y: 0.045999736, z: 0.36300167}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

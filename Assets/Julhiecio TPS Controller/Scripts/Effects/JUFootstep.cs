@@ -5,112 +5,113 @@ using UnityEngine.Events;
 namespace JUTPS.FX
 {
     /// <summary>
-    /// Spawn footstep sound or effects while character walks.
+    /// Tạo âm thanh bước chân hoặc hiệu ứng (FX) khi nhân vật di chuyển.
     /// </summary>
     [RequireComponent(typeof(Animator))]
     [AddComponentMenu("JU TPS/FX/Footstep")]
     public class JUFootstep : MonoBehaviour
     {
+        // Khoảng thời gian (giây) giữa mỗi lần kiểm tra khoảng cách để tối ưu hóa hiệu suất
         private const float CHECK_FOOTSTEP_DISTANCE_INTERVAL = 2f;
 
-        // Use static variable to store camera to share the same data for all footsteps 
-        // of all characters avoiding unnecessary calls to find the camera.
+        // Sử dụng biến static để lưu trữ camera dùng chung cho tất cả các nhân vật,
+        // tránh việc gọi hàm tìm camera (Camera.main) quá nhiều lần gây tốn hiệu năng.
         private static Camera _mainCamera;
 
         private float _checkFootstepActiveTimer;
 
-        private bool _leftFootGrounded;
-        private bool _rightFootGrounded;
+        private bool _leftFootGrounded;  // Trạng thái chân trái đang chạm đất
+        private bool _rightFootGrounded; // Trạng thái chân phải đang chạm đất
 
         private float _checkLeftFootTimer;
         private float _checkRightFootTimer;
 
         /// <summary>
-        /// The audio source that will play the footstep sound.
+        /// Nguồn âm thanh (Audio Source) sẽ phát ra tiếng bước chân.
         /// </summary>
         [Header("FX Settings")]
         public AudioSource AudioSource;
 
         /// <summary>
-        /// All footsteps FXs.
+        /// Danh sách tất cả các hiệu ứng âm thanh bước chân tương ứng với từng bề mặt.
         /// </summary>
         public SurfaceAudiosWithFX[] FootstepAudioClips;
 
         /// <summary>
-        /// Invert the footstep decal X scale?
+        /// Đảo ngược trục X của decal bước chân (dấu chân)?
         /// </summary>
         public bool InvertX;
 
         /// <summary>
-        /// Used to doesn't allow play multiple footstep audios on the same time.
+        /// Thời gian tối thiểu giữa các lần phát âm thanh để tránh việc tiếng bước chân bị chồng chéo quá nhanh.
         /// </summary>
         [Range(0, 1)]
         public float MinTimeToPlayAudio;
 
         /// <summary>
-        /// The ground collider layer.
+        /// Lớp (Layer) của mặt đất để kiểm tra va chạm.
         /// </summary>
         [Header("Ground Check")]
         public LayerMask GroundLayers;
 
         /// <summary>
-        /// The max distance to check if the foot is grounded.
+        /// Khoảng cách tối đa để kiểm tra xem bàn chân có đang chạm đất hay không.
         /// </summary>
         [Range(0, 1)]
         public float CheckDistance;
 
         /// <summary>
-        /// The ground check position 'Y' relative to foot position.
+        /// Độ lệch vị trí kiểm tra theo trục 'Y' so với vị trí bàn chân.
         /// </summary>
         [Header("Ground Check Position Offset")]
         [Range(-0.2f, 0.2f)]
         public float UpOffset;
 
         /// <summary>
-        /// The ground check position 'Z' relative to foot position.
+        /// Độ lệch vị trí kiểm tra theo trục 'Z' so với vị trí bàn chân.
         /// </summary>
         [Range(-0.2f, 0.2f)]
         public float ForwardOffset;
 
         /// <summary>
-        /// The left foot transform.
+        /// Transform của xương bàn chân trái.
         /// </summary>
         [Space]
         public Transform LeftFoot;
 
         /// <summary>
-        /// The right foot transform.
+        /// Transform của xương bàn chân phải.
         /// </summary>
         public Transform RightFoot;
 
         /// <summary>
-        /// The max distance that the footstep can play based on <see cref="Camera.main"/> position.
+        /// Khoảng cách tối đa mà tiếng bước chân có thể phát ra dựa trên vị trí của Camera chính.
         /// </summary>
         public float MaxFootstepDistance;
 
         /// <summary>
-        /// Called on left foot hit ground.
+        /// Sự kiện được gọi khi chân trái chạm đất.
         /// </summary>
         public UnityEvent<RaycastHit> OnLeftFootHit;
 
         /// <summary>
-        /// Called on right foot hit ground.
+        /// Sự kiện được gọi khi chân phải chạm đất.
         /// </summary>
         public UnityEvent<RaycastHit> OnRightFootHit;
 
         /// <summary>
-        /// Return true if the character is closest of the <see cref="Camera.main"/> based on <see cref="MaxFootstepDistance"/>.
-        /// If false, the footstep will not play (used to optimize distant characters).
+        /// Trả về true nếu nhân vật đang ở gần Camera hơn khoảng cách MaxFootstepDistance.
+        /// Nếu false, hệ thống bước chân sẽ ngừng hoạt động để tối ưu hóa các nhân vật ở xa.
         /// </summary>
         public bool IsFootsepActing { get; private set; }
 
         /// <summary>
-        /// The animator used by the footstep system.
+        /// Component Animator được hệ thống bước chân sử dụng.
         /// </summary>
         public Animator Animator { get; private set; }
 
         /// <summary>
-        /// The footstep checker position of the left foot.
+        /// Vị trí điểm kiểm tra (checker) của chân trái.
         /// </summary>
         public Vector3 LeftFootCheckerPosition
         {
@@ -118,7 +119,7 @@ namespace JUTPS.FX
         }
 
         /// <summary>
-        /// The footstep checker position of the right foot.
+        /// Vị trí điểm kiểm tra (checker) của chân phải.
         /// </summary>
         public Vector3 RightFootCheckerPosition
         {
@@ -126,7 +127,7 @@ namespace JUTPS.FX
         }
 
         /// <summary>
-        /// Create a component instance.
+        /// Khởi tạo các giá trị mặc định cho component.
         /// </summary>
         public JUFootstep()
         {
@@ -141,16 +142,19 @@ namespace JUTPS.FX
 
         private void Start()
         {
+            // Tự động lấy AudioSource nếu chưa gán
             if (!AudioSource)
                 AudioSource = GetComponent<AudioSource>();
 
             Animator = GetComponent<Animator>();
             if (Animator)
             {
+                // Tự động tìm xương chân trái và chân phải từ hình người (Humanoid)
                 if (!LeftFoot) LeftFoot = Animator.GetBoneTransform(HumanBodyBones.LeftFoot);
                 if (!RightFoot) RightFoot = Animator.GetBoneTransform(HumanBodyBones.RightFoot);
             }
 
+            // Mặc định sử dụng layer Default nếu chưa thiết lập GroundLayers
             if (GroundLayers.value == 0)
                 GroundLayers = LayerMask.GetMask("Default");
         }
@@ -160,18 +164,20 @@ namespace JUTPS.FX
             if (!LeftFoot || !RightFoot)
                 return;
 
+            // Kiểm tra xem nhân vật có đủ gần camera để xử lý bước chân không (Tối ưu performance)
             UpdateFootstepActiveByDistance();
 
             if (!IsFootsepActing)
                 return;
 
+            // XỬ LÝ CHÂN TRÁI
             if (_checkLeftFootTimer < MinTimeToPlayAudio)
                 _checkLeftFootTimer += Time.deltaTime;
-
             else
             {
                 bool hasLeftGroundHit = GetFootHitInfo(LeftFoot, out RaycastHit leftFootHit);
 
+                // Nếu chân vừa chạm đất trong khung hình này
                 if (hasLeftGroundHit && !_leftFootGrounded)
                 {
                     DoFootstep(LeftFoot, leftFootHit);
@@ -185,9 +191,9 @@ namespace JUTPS.FX
                     _leftFootGrounded = false;
             }
 
+            // XỬ LÝ CHÂN PHẢI
             if (_checkRightFootTimer < MinTimeToPlayAudio)
                 _checkRightFootTimer += Time.deltaTime;
-
             else
             {
                 bool hasRightGroundHit = GetFootHitInfo(RightFoot, out RaycastHit rightFootHit);
@@ -206,20 +212,23 @@ namespace JUTPS.FX
             }
         }
 
+        // Bắn Raycast từ bàn chân xuống đất để lấy thông tin bề mặt
         private bool GetFootHitInfo(Transform foot, out RaycastHit hit)
         {
             Vector3 footPosition = GetFootCheckerPosition(foot);
             return Physics.Raycast(footPosition, -transform.up, out hit, CheckDistance, GroundLayers);
         }
 
+        // Tính toán vị trí điểm kiểm tra dựa trên các chỉ số Offset (bù trừ)
         private Vector3 GetFootCheckerPosition(Transform foot)
         {
             return foot.position + transform.forward * ForwardOffset + transform.up * UpOffset;
         }
 
+        // Thực hiện phát âm thanh và tạo Decal dấu chân
         private void DoFootstep(Transform foot, RaycastHit groundHit)
         {
-            // Play random footstep audio, instantiate decal and return the decal gameobject
+            // Phát âm thanh ngẫu nhiên và tạo decal dựa trên Tag của bề mặt va chạm
             GameObject footstepDecal = SurfaceAudiosWithFX.Play(AudioSource, FootstepAudioClips, groundHit.point, Quaternion.identity, null, groundHit.collider.tag);
 
             if (!footstepDecal)
@@ -227,15 +236,15 @@ namespace JUTPS.FX
 
             Transform decalTransform = footstepDecal.transform;
 
-            // Align decal with ground.
+            // Căn chỉnh decal nằm phẳng trên mặt đất dựa trên Normal (véc-tơ pháp tuyến) của điểm va chạm
             decalTransform.rotation = Quaternion.LookRotation(groundHit.normal) * Quaternion.Euler(90, 0, 0);
 
-            // Look to the character move direction.
+            // Xoay decal theo hướng di chuyển của nhân vật
             var forward = Vector3.ProjectOnPlane(transform.forward, Vector3.up);
             forward /= forward.magnitude;
             decalTransform.rotation *= Quaternion.LookRotation(forward);
 
-            // Fix Footstep Decal sides fix
+            // Xử lý đảo ngược dấu chân trái/phải để không bị trùng lặp hình ảnh
             if (foot == RightFoot)
             {
                 Vector3 decalScale = decalTransform.localScale;
@@ -255,10 +264,11 @@ namespace JUTPS.FX
                 decalTransform.localScale = decalScale;
             }
 
-            // Draw a line in the upward direction of the Footstep Decal
+            // Vẽ một đường tia màu đỏ trong Scene view để debug hướng của decal
             Debug.DrawRay(footstepDecal.transform.position, footstepDecal.transform.up * 2, Color.red, 1);
         }
 
+        // Tối ưu hóa: Chỉ xử lý bước chân nếu nhân vật ở gần camera
         private void UpdateFootstepActiveByDistance()
         {
             if (!AudioSource)
@@ -272,6 +282,7 @@ namespace JUTPS.FX
                 return;
             }
 
+            // Kiểm tra camera chính
             if (_mainCamera && !_mainCamera.isActiveAndEnabled)
             {
                 _mainCamera = null;
@@ -288,23 +299,28 @@ namespace JUTPS.FX
             }
 
             _checkFootstepActiveTimer = 0;
+            // Tính toán khoảng cách từ nhân vật tới camera
             IsFootsepActing = Vector3.Distance(transform.position, _mainCamera.transform.position) < MaxFootstepDistance;
+
+            // Tắt AudioSource nếu ở quá xa để tiết kiệm tài nguyên
             AudioSource.enabled = IsFootsepActing;
         }
 
+        // Vẽ các khối cầu Gizmos trong Editor để người dùng dễ dàng căn chỉnh vị trí kiểm tra bước chân
         private void OnDrawGizmos()
         {
             if (LeftFoot == null || RightFoot == null)
             {
                 Animator = GetComponent<Animator>();
+                if (Animator == null) return;
                 LeftFoot = Animator.GetBoneTransform(HumanBodyBones.LeftFoot);
                 RightFoot = Animator.GetBoneTransform(HumanBodyBones.RightFoot);
                 return;
             }
-            Color collisionColor = Color.green;
+            Color collisionColor = Color.green; // Màu xanh khi chân chạm đất
             collisionColor.a = 0.4f;
 
-            Color noCollisionColor = Color.red;
+            Color noCollisionColor = Color.red; // Màu đỏ khi chân đang nhấc lên
             noCollisionColor.a = 0.2f;
 
             Gizmos.color = _leftFootGrounded ? collisionColor : noCollisionColor;
@@ -317,6 +333,7 @@ namespace JUTPS.FX
         }
 
 #if UNITY_EDITOR
+        // Tính năng trong menu chuột phải để tự động gán các âm thanh bước chân mặc định của JUTPS
         [ContextMenu("Load Default Footstep Audios", false, 100)]
         public void LoadDefaultFootstepInInspector()
         {
@@ -327,11 +344,11 @@ namespace JUTPS.FX
         {
             if (!System.IO.Directory.Exists(path))
             {
-                Debug.LogError("Unable to load default footstep audios as the indicated path does not exist.");
+                Debug.LogError("Không thể tải âm thanh mặc định vì đường dẫn không tồn tại.");
                 return;
             }
 
-            // Create empty audio slots.
+            // Tạo các ô chứa âm thanh trống
             footsteper.FootstepAudioClips = new SurfaceAudiosWithFX[4];
             for (int i = 0; i < 4; i++)
             {
@@ -340,7 +357,7 @@ namespace JUTPS.FX
                     footsteper.FootstepAudioClips[i].AudioClips.Add(null);
             }
 
-            //Load Footstep Audios.
+            // Tải âm thanh cho từng loại bề mặt: Bê tông, Đá, Cỏ, Gạch.
             footsteper.FootstepAudioClips[0].SurfaceTag = "Untagged";
             for (int i = 0; i < 4; i++)
             {
@@ -374,7 +391,7 @@ namespace JUTPS.FX
         {
             if (!System.IO.File.Exists(path))
             {
-                Debug.LogWarning($"Unable to load asset {typeof(T).Name}: {path}");
+                Debug.LogWarning($"Không thể tải asset {typeof(T).Name}: {path}");
                 return null;
             }
 

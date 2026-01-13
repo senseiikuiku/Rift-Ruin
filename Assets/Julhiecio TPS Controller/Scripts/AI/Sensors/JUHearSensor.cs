@@ -1,20 +1,20 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace JU.CharacterSystem.AI.HearSystem
 {
     /// <summary>
-    /// Listen the environment to find targets.
+    /// Hãy lắng nghe môi trường xung quanh để tìm kiếm mục tiêu.
     /// </summary>
     [System.Serializable]
     public class HearSensor
     {
-        // Stores and update all AI hear sensors.
+        // Lưu trữ và cập nhật tất cả dữ liệu từ cảm biến thính giác AI.
         private class JU_AIHearManager : MonoBehaviour
         {
-            // Max amount of sensors that can be updated on each frame.
-            // Used to not update large count of sensors on the same frame.
+            // Số lượng tối đa các cảm biến có thể được cập nhật trên mỗi khung hình.
+            // Trước đây, tính năng này không cập nhật số lượng lớn cảm biến trên cùng một khung hình.
             public const int MAX_SENSORS_PER_GROUP = 10;
 
             private int _currentGroupToUpdateIndex;
@@ -23,8 +23,8 @@ namespace JU.CharacterSystem.AI.HearSystem
             private List<SoundData> _sounds;
 
             /// <summary>
-            /// The sensors groups, each group can have only <see cref="MAX_SENSORS_PER_GROUP"/> amount of sensors.
-            /// The key is the group index, and the value is the group with the sensors.
+            /// Các nhóm cảm biến, mỗi nhóm chỉ có thể có <see cref="MAX_SENSORS_PER_GROUP"/> số lượng cảm biến.
+            /// Điểm mấu chốt là nhóm chỉ số, và giá trị là nhóm chứa các cảm biến..
             /// </summary>
             private Dictionary<int, List<HearSensor>> _sensorsGroups;
 
@@ -36,12 +36,12 @@ namespace JU.CharacterSystem.AI.HearSystem
                 if (_sounds.Count == 0)
                     return;
 
-                // All groups are updated, but only a single group per frame to help with performance.
+                // Tất cả các cảm biến đã bị vô hiệu hóa.
 
-                // Update all sensors of the current group.
+                // Cập nhật tất cả cảm biến trong nhóm hiện tại.
                 foreach (var sensor in _currentGroupToUpdate)
                 {
-                    // Remove invalid sensors.
+                    // Xóa cảm biến nếu không có AI.
                     if (!sensor.AI)
                     {
                         _currentGroupToUpdate.Remove(sensor);
@@ -51,18 +51,18 @@ namespace JU.CharacterSystem.AI.HearSystem
                     if (!sensor.Enabled || !sensor.AI.enabled)
                         continue;
 
-                    // Check if have a sound closest to the sensor.
+                    // Kiểm tra tất cả các âm thanh hiện có.
                     foreach (var sound in _sounds)
                     {
-                        // The sensor is hearing the sounds of the your our character.
-                        // So it's can be ignored
+                        // Cảm biến đang thu nhận âm thanh của nhân vật của bạn.
+                        // Bỏ qua âm thanh này.
                         if (sound.Owner && sound.Owner == sensor.AI.gameObject)
                             continue;
 
                         if (Vector3.Distance(sensor.AI.Center, sound.Position) > sound.Distance)
                             continue;
 
-                        // Ignore the sound if have a tag to ignore.
+                        // Bỏ qua âm thanh nếu có một thẻ để bỏ qua.
                         if (sound.Tag)
                         {
                             bool ignoreSound = false;
@@ -84,7 +84,7 @@ namespace JU.CharacterSystem.AI.HearSystem
                     }
                 }
 
-                // Set the next group to update on the next frame.
+                // Tiếp tục với nhóm cảm biến tiếp theo trong khung hình tiếp theo.
 
                 if (_currentGroupToUpdateIndex == _sensorsGroups.Count - 1)
                 {
@@ -98,12 +98,12 @@ namespace JU.CharacterSystem.AI.HearSystem
             }
 
             /// <summary>
-            /// Add a new sound to hear sensors proccess.
+            /// Thêm âm thanh mới để nghe quá trình xử lý của các cảm biến.
             /// </summary>
-            /// <param name="position">The posision of the sound.</param>
-            /// <param name="distance">The max sound distance.</param>
-            /// <param name="owner">The object owner of the sound.</param>
-            /// <param name="soundTag">The sound tag, used by AIs to filter wich sound should be heared.</param>
+            /// <param name="position">Vị trí của âm thanh.</param>
+            /// <param name="distance">Khoảng cách âm thanh tối đa.</param>
+            /// <param name="owner">Chủ sở hữu đối tượng của âm thanh.</param>
+            /// <param name="soundTag">Tag âm thanh, được AI sử dụng để lọc ra những âm thanh cần được làm nóng..</param>
             public void AddSoundSource(Vector3 position, float distance, GameObject owner, JUTag soundTag)
             {
                 if (_sounds == null)
@@ -119,15 +119,16 @@ namespace JU.CharacterSystem.AI.HearSystem
             }
 
             /// <summary>
-            /// Add a new hear sensor to listen the environment.
+            /// Thêm cảm biến âm thanh mới để lắng nghe môi trường xung quanh.
             /// </summary>
             /// <param name="sensor"></param>
             public void AddSensor(HearSensor sensor)
             {
-                // Sensors are separated by groups, all sensors are updated but only a single group
-                // per frame to help with performance.
+                // Các cảm biến được phân chia theo nhóm, tất cả các cảm biến đều được cập nhật nhưng chỉ một nhóm duy nhất được cập nhật
 
-                // Add always on the last group. If the group is full, create a new group. 
+                // mỗi khung hình để cải thiện hiệu suất.
+
+                // Luôn thêm vào nhóm cuối cùng. Nếu nhóm đầy, hãy tạo một nhóm mới. 
 
                 if (_sensorsGroups == null)
                     _sensorsGroups = new Dictionary<int, List<HearSensor>>();
@@ -138,7 +139,7 @@ namespace JU.CharacterSystem.AI.HearSystem
                     _sensorsGroups.Add(0, _currentGroupToUpdate);
                 }
 
-                // Add to last group if avaliable.
+                // Thêm vào nhóm cuối cùng nếu chưa đầy.
                 var lastGroup = _sensorsGroups[_sensorsGroups.Count - 1];
                 if (lastGroup.Count < MAX_SENSORS_PER_GROUP)
                 {
@@ -146,7 +147,7 @@ namespace JU.CharacterSystem.AI.HearSystem
                     return;
                 }
 
-                // Add to a new group if the last if full.
+                // Thêm vào nhóm mới nếu nhóm cuối cùng đã đầy.
                 _sensorsGroups.Add(_sensorsGroups.Count, new List<HearSensor>());
                 _sensorsGroups[_sensorsGroups.Count - 1].Add(sensor);
             }
@@ -163,28 +164,28 @@ namespace JU.CharacterSystem.AI.HearSystem
         private static JU_AIHearManager _hearManager;
 
         /// <summary>
-        /// If true, the sensor can listen the environment.
+        /// Nếu được bật, cảm biến sẽ lắng nghe âm thanh.
         /// </summary>
         public bool Enabled;
 
         /// <summary>
-        /// The tag of the sounds that should be ignored.
+        /// Tags âm thanh để bỏ qua.
         /// </summary>
         public JUTag[] SoundsToIgnore;
 
         /// <summary>
-        /// The AI character.
+        /// Nhân vật AI sở hữu cảm biến này.
         /// </summary>
         public JUCharacterAIBase AI { get; private set; }
 
         /// <summary>
-        /// Called when the AI listen something.
-        /// Returns the position of the sound and the owner.
+        /// Đang xảy ra khi cảm biến nghe thấy âm thanh.
+        /// Trả về vị trí âm thanh và chủ sở hữu âm thanh (nếu có).
         /// </summary>
         public UnityEvent<Vector3, GameObject> OnHear;
 
         /// <summary>
-        /// Create a new hear sensor.
+        /// Tạo một cảm biến nghe mới.
         /// </summary>
         public HearSensor()
         {
@@ -192,7 +193,7 @@ namespace JU.CharacterSystem.AI.HearSystem
         }
 
         /// <summary>
-        /// Setup the hear sensor.
+        /// Thiet lập cảm biến nghe cho một nhân vật AI cụ thể.
         /// </summary>
         /// <param name="ai"></param>
         public void Setup(JUCharacterAIBase ai)
@@ -209,12 +210,12 @@ namespace JU.CharacterSystem.AI.HearSystem
         }
 
         /// <summary>
-        /// Add a new sound source that can be listened by some <see cref="JUCharacterAIBase"/> with <see cref="HearSensor"/> sensor.
+        /// Thêm một nguồn âm thanh mới mà một số người có thể nghe được. <see cref="JUCharacterAIBase"/> với <see cref="HearSensor"/> cảm biến.
         /// </summary>
-        /// <param name="position">The position of the sound.</param>
-        /// <param name="distance">The max sound distance.</param>
-        /// <param name="owner">The sound owner.</param>
-        /// <param name="soundTag">The sound tag, used by AIs to filter wich sound should be heared.</param>
+        /// <param name="position">Vị trí của âm thanh.</param>
+        /// <param name="distance">Khoảng cách âm thanh tối đa.</param>
+        /// <param name="owner">Chủ sở hữu âm thanh.</param>
+        /// <param name="soundTag">Tag âm thanh, được AI sử dụng để lọc ra những âm thanh cần được nghe.</param>
         public static void AddSoundSource(Vector3 position, float distance, GameObject owner, JUTag soundTag)
         {
             if (distance == 0)

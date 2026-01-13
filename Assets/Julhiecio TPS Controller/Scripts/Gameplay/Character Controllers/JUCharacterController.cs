@@ -36,12 +36,18 @@ namespace JUTPS
         public float PhysicalDamageStartAt = 25;
         public float PhysicalDamageMultiplier = 0.8f;
         public float RagdollStartAtDamage = 10;
+        // Các tags của các đối tượng sẽ bị bỏ qua khi tính toán sát thương vật lý
         public string[] PhysicalDamageIgnoreTags = new string[] { "Player", "Enemy", "Bullet" };
 
+        // Cài đặt IK (IK là viết tắt của Inverse Kinematics - Hệ thống chuyển động ngược)
         [Header("IK Settings")]
+        // Cân chỉnh khuỷu tay phải
         public float RightElbowAdjustWeight = 0.5f;
+        // Cân chỉnh khuỷu tay trái
         public float LeftElbowAdjustWeight = 0f;
+        // Cân chỉnh vai phải
         public float LookAtBodyWeight = 0.5f;
+        // Cân chỉnh vai trái
         public float HeadIKBodyWeight = 1;
         public JUCharacterController() : base()
         {
@@ -50,6 +56,7 @@ namespace JUTPS
 
         protected override void Start()
         {
+            // Trang bị vật phẩm đã chọn khi bắt đầu
             IEnumerator EquipeSelectedItem()
             {
                 yield return new WaitForEndOfFrame();
@@ -58,6 +65,7 @@ namespace JUTPS
 
             base.Start();
 
+            // Bắt đầu quá trình trang bị vật phẩm đã chọn
             StartCoroutine(EquipeSelectedItem());
 
             if (Inputs)
@@ -69,8 +77,11 @@ namespace JUTPS
         void FixedUpdate()
         {
             if (IsDead == true || DisableAllMove == true || JUPauseGame.IsPaused) { return; }
+            // Xử lý chuyển động
             Movement();
+            // Chiều trượt dốc (Slope Slide)
             SlopeSlide();
+            // Hiệu chỉnh bước chân
             StepCorrectionMovement();
         }
 

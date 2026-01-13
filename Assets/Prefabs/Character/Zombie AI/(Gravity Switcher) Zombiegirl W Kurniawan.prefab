@@ -2972,6 +2972,7 @@ GameObject:
   - component: {fileID: 5104246945884293832}
   - component: {fileID: 2527278826091508297}
   - component: {fileID: 3196666162241982905}
+  - component: {fileID: 1932660301847976079}
   m_Layer: 9
   m_Name: (Gravity Switcher) Zombiegirl W Kurniawan
   m_TagString: Enemy
@@ -3186,7 +3187,7 @@ MonoBehaviour:
   SetRigidbodyVelocity: 0
   FireModeMaxTime: 1
   Speed: 6
-  WalkSpeed: 1
+  WalkSpeed: 1.5
   CrouchSpeed: 0.4
   RunSpeed: 2.2
   SprintingSpeedMax: 1.9
@@ -3828,7 +3829,7 @@ MonoBehaviour:
     MaxDetections: 10
     TargetsLayer:
       serializedVersion: 2
-      m_Bits: 768
+      m_Bits: 512
     ObstaclesLayer:
       serializedVersion: 2
       m_Bits: 67585
@@ -3914,6 +3915,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5479cab4ae27bc458de9e8bbcd05269, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KillReporter
+--- !u!114 &1932660301847976079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5552608283981884453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a36dbca78d29c0b459ccd9847b0a137b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JUTPS.AI.ZombieDifficultyAdapter
 --- !u!1 &5566075831068144686
 GameObject:
   m_ObjectHideFlags: 0

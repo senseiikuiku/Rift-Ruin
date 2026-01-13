@@ -648,6 +648,7 @@ GameObject:
   - component: {fileID: 7078101296518164350}
   - component: {fileID: 6039917656566904614}
   - component: {fileID: 2986261456566912822}
+  - component: {fileID: -3178490895956503838}
   m_Layer: 9
   m_Name: (Gravity Switcher) copzombie_l_actisdato
   m_TagString: Enemy
@@ -863,7 +864,7 @@ MonoBehaviour:
   SetRigidbodyVelocity: 0
   FireModeMaxTime: 1
   Speed: 3
-  WalkSpeed: 0.5
+  WalkSpeed: 1.5
   CrouchSpeed: 0.4
   RunSpeed: 1.7
   SprintingSpeedMax: 1.9
@@ -1442,13 +1443,13 @@ MonoBehaviour:
     SearhLastTargetTime: 15
   FieldOfView:
     Enabled: 1
-    Distance: 10
-    Angle: 90
+    Distance: 18
+    Angle: 130
     RefreshRate: 0.5
     MaxDetections: 10
     TargetsLayer:
       serializedVersion: 2
-      m_Bits: 768
+      m_Bits: 512
     ObstaclesLayer:
       serializedVersion: 2
       m_Bits: 67585
@@ -1554,6 +1555,18 @@ MonoBehaviour:
   - {fileID: 8300000, guid: d31af09d95e6abd4faa3cf00959bcc30, type: 3}
   MinAmbientRoarInterval: 5
   MaxAmbientRoarInterval: 15
+--- !u!114 &-3178490895956503838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1350575349501759097}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a36dbca78d29c0b459ccd9847b0a137b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JUTPS.AI.ZombieDifficultyAdapter
 --- !u!1 &1402159411252487082
 GameObject:
   m_ObjectHideFlags: 0

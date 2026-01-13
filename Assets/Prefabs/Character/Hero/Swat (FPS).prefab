@@ -1429,7 +1429,8 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 715698226d8df724785ab9db90d2775f, type: 3}
     - {fileID: 8300000, guid: 78e2ce3c64e256742a7439d674f2c5d7, type: 3}
     - {fileID: 8300000, guid: 1f97e96c6a43950469f0841f3a2dd8eb, type: 3}
-    Effects: []
+    Effects:
+    - {fileID: 3764143262606855481, guid: 5447f23ae9a65134ba943453992b5a81, type: 3}
     EffectsLifeTime: 5
   - SurfaceTag: Stone
     AudioClips:
@@ -14575,7 +14576,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 105217
   BulletsPerMagazine: 38
-  TotalBullets: 300
+  TotalBullets: 1
   BulletsAmounts: 38
   NumberOfShotgunBulletsPerShot: 12
   InfiniteAmmo: 0
@@ -15262,6 +15263,7 @@ MonoBehaviour:
     - {fileID: 3377176041485713299, guid: f5973a37858ed07439978e742b77a3af, type: 3}
     EffectsLifeTime: 5
   HitSoundsAudioSource: {fileID: 7091505269710352590}
+  FriendlyFire: 0
   HitPlayerSound: {fileID: 8300000, guid: 36fc729e406ab3c41b40881dbdda9b36, type: 3}
 --- !u!82 &7091505269710352590
 AudioSource:
@@ -21111,7 +21113,7 @@ Transform:
   m_GameObject: {fileID: 5072090824704287237}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.00000043213367, y: 0.045999527, z: 0.36300093}
+  m_LocalPosition: {x: 0.000000078231096, y: 0.04599884, z: 0.36299938}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -21926,6 +21928,7 @@ MonoBehaviour:
     - {fileID: 3377176041485713299, guid: f5973a37858ed07439978e742b77a3af, type: 3}
     EffectsLifeTime: 5
   HitSoundsAudioSource: {fileID: 135421960648041305}
+  FriendlyFire: 0
   HitPlayerSound: {fileID: 8300000, guid: 36fc729e406ab3c41b40881dbdda9b36, type: 3}
 --- !u!82 &135421960648041305
 AudioSource:
@@ -27347,8 +27350,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6507899401569819061}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.48821586, y: 0.05070874, z: 0.829182, w: 0.26745299}
-  m_LocalPosition: {x: -0.11743361, y: 0.012795582, z: 0.1805153}
+  m_LocalRotation: {x: 0.48821583, y: 0.050708693, z: 0.829182, w: 0.267453}
+  m_LocalPosition: {x: -0.11743361, y: 0.012795478, z: 0.18051589}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

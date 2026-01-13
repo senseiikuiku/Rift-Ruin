@@ -10,7 +10,7 @@ using JUTPS.CharacterBrain;
 namespace JUTPS
 {
     /// <summary>
-    /// A hit detector that apply damage to another collider with <see cref="JUHealth"/> or a <see cref="DamageableBodyPart"/>.
+    /// Một bộ dò va chạm gây sát thương cho một bộ va chạm khác với <see cref="JUHealth"/> hoặc <see cref="DamageableBodyPart"/>.
     /// </summary>
     [AddComponentMenu("JU TPS/Armor System/JU Damager")]
     public class Damager : MonoBehaviour
@@ -23,28 +23,28 @@ namespace JUTPS
         private Collider _oldHit;
 
         /// <summary>
-        /// If true, show an UI indicator with the damage force on the other hitted collider.
+        /// Nếu đúng, hãy hiển thị chỉ báo giao diện người dùng với lực sát thương tác động lên bộ phận va chạm còn lại.
         /// </summary>
         public bool ShowHitMarker;
 
         /// <summary>
-        /// Starts the game with this <see cref="Damager"/> disabled by default?
+        /// Nếu đúng, hãy hiển thị chỉ báo giao diện người dùng với lực sát thương tác động lên bộ phận va chạm còn lại.
         /// </summary>
         public bool DisableOnStart;
 
         /// <summary>
-        /// The damage force.
+        /// Lực gây thiệt hại.
         /// </summary>
         [JUHeader("Damager Settings")]
         public float Damage;
 
         /// <summary>
-        /// Used to avoid multi damage calls, set the damage interval on each hit.
+        /// Dùng để tránh nhiều lần gọi gây sát thương, thiết lập khoảng thời gian gây sát thương cho mỗi lần tấn công.
         /// </summary>
         public float HitMinTime = 0.5f;
 
         /// <summary>
-        /// Detect hit using raycast.
+        /// Phát hiện va chạm bằng cách sử dụng raycast.
         /// </summary>
         [JUHeader("Damage Detection Settings")]
         public bool RaycastingMode;
@@ -72,6 +72,7 @@ namespace JUTPS
         public bool IsColliding { get; private set; }
         public Rigidbody Rigidbody { get; private set; }
 
+        // Khởi tạo các giá trị mặc định cho Damager
         public Damager()
         {
             CanHit = true;
@@ -93,6 +94,7 @@ namespace JUTPS
             HitSoundsAudioSource = null;
         }
 
+        // Khởi tạo các thành phần và thiết lập ban đầu
         private void Awake()
         {
             _startLocalPosition = transform.localPosition;
@@ -140,6 +142,7 @@ namespace JUTPS
                 CheckRaycastHit();
         }
 
+        // Xử lý va chạm vật lý
         private void OnCollisionEnter(Collision collision)
         {
             Collider collider = collision.collider;
@@ -153,6 +156,7 @@ namespace JUTPS
             Debug.Log("Hit player collisionEnter");
         }
 
+        // Xử lý va chạm với trigger
         private void OnTriggerEnter(Collider other)
         {
             Vector3 point = transform.position;
@@ -166,6 +170,7 @@ namespace JUTPS
 
         }
 
+        // Xử lý va chạm và gây sát thương
         private void CheckCollisionHit(Collider other, Vector3 point, Vector3 normal)
         {
             if (!CanHit)
@@ -217,7 +222,7 @@ namespace JUTPS
             {
                 var hitCollider = hits[i].collider;
 
-                // Don't apply damage on the same object multiple times.
+                // Don't apply damage on the same object multiple times.    
                 if (hitCollider == _oldHit)
                     continue;
 
@@ -258,11 +263,12 @@ namespace JUTPS
                 _oldHit = null;
         }
 
+        // Thiết lập các collider để bỏ qua va chạm
         private void SetupCollidersToIgnore()
         {
             Collider thisCollider = GetComponent<Collider>();
 
-            // Setup default colliders to ignore collision.
+            // Thiêt lập các collider cụ thể để bỏ qua va chạm
             if (!IgnoreRootColliders && thisCollider)
             {
                 for (int i = 0; i < AllCollidersToIgnore.Length; i++)
@@ -274,19 +280,19 @@ namespace JUTPS
             else if (!IgnoreRootColliders)
                 return;
 
-            // Get all root colliders.
+            // Lấy tất cả collider từ root object
             var rootCollidersList = transform.root.GetComponentsInChildren<Collider>().ToList();
             if (thisCollider)
                 rootCollidersList.Remove(thisCollider);
 
-            // Merge root colliders into AllCollidersToIgnore list.
+            // Lấy tất cả collider từ root object và thêm vào danh sách bỏ qua va chạm
             var rootColliders = rootCollidersList.ToArray();
             int oldLength = AllCollidersToIgnore.Length;
             int rootLength = rootColliders.Length;
 
             if (oldLength > 0)
             {
-                // Add all root colliders colliders to ignore list.
+                // Kết hợp hai mảng collider lại với nhau
                 Array.Resize(ref AllCollidersToIgnore, oldLength + rootLength - 1);
                 for (int i = 0; i < rootLength; i++)
                     AllCollidersToIgnore[Mathf.Max(oldLength - 1, 0) + i] = rootColliders[i];
@@ -294,10 +300,10 @@ namespace JUTPS
             else
                 AllCollidersToIgnore = rootColliders;
 
-            // Remove all duplicated items.
+            // Loại bỏ các collider trùng lặp
             AllCollidersToIgnore = new HashSet<Collider>(AllCollidersToIgnore).ToArray();
 
-            // Setup default colliders to ignore collision.
+            // Thiêt lập các collider cụ thể để bỏ qua va chạm
             if (thisCollider)
             {
                 foreach (Collider collider in AllCollidersToIgnore)
@@ -306,17 +312,20 @@ namespace JUTPS
             }
         }
 
+        // Vô hiệu hóa trạng thái va chạm sau khi đã xử lý
         private void DisableCollidedState()
         {
             _oldHit = null;
             IsColliding = false;
         }
 
+        // Kích hoạt lại khả năng gây sát thương sau khi bị vô hiệu hóa
         private void EnableDamaging()
         {
             CanHit = true;
         }
 
+        // Tạm thời vô hiệu hóa khả năng gây sát thương trong một khoảng thời gian
         public void DisableDamagingForSeconds(float disabledSeconds)
         {
             if (IsInvoking(nameof(EnableDamaging)))
@@ -326,11 +335,13 @@ namespace JUTPS
             Invoke(nameof(EnableDamaging), disabledSeconds);
         }
 
+        // Gây sát thương cho collider được truyền vào khi được hit
         public void DoDamage(Collider collider, Vector3 point, Vector3 normal, float damage, SurfaceAudiosWithFX[] hitParticles, AudioSource hitAudioSource)
         {
             DamageableBodyPart bodyPart = collider.GetComponentInChildren<DamageableBodyPart>();
             float realDamage = damage;
 
+            // Tạo thông tin sát thương
             JUHealth.DamageInfo damageInfo = new JUHealth.DamageInfo
             {
                 Damage = damage,
@@ -340,6 +351,7 @@ namespace JUTPS
                 HitOwner = _characterOwner ? _characterOwner.gameObject : null
             };
 
+            // Nếu không có body part, áp dụng sát thương trực tiếp lên JUHealth
             if (!bodyPart)
             {
                 JUHealth health = collider.GetComponentInParent<JUHealth>();
@@ -362,7 +374,7 @@ namespace JUTPS
                 }
             }
 
-            //Instantiate Particle FX
+            // Khi va chạm, phát hiệu ứng hạt và âm thanh
             Quaternion particleRotation = Quaternion.LookRotation(normal);
             string tag = collider.tag;
 
@@ -372,8 +384,10 @@ namespace JUTPS
                 fx.transform.parent = collider.transform;
         }
 
+        // Vẽ Gizmos để hiển thị phạm vi phát hiện sát thương
         private void OnDrawGizmos()
         {
+            // Nêu đang ở chế độ Raycasting, vẽ một đường thẳng để biểu diễn tia raycast
             if (RaycastingMode)
             {
                 Gizmos.color = Color.red;

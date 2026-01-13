@@ -1,117 +1,116 @@
-using UnityEngine;
+﻿using UnityEngine;
 using JUTPS;
 
 namespace JU.CharacterSystem.AI
 {
     /// <summary>
-    /// The base to create AIs for <see cref="JUCharacterController"/>.
+    /// Lớp cơ sở để tạo các trí tuệ nhân tạo (AI) cho <see cref="JUCharacterController"/>.
     /// </summary>
     public class JUCharacterAIBase : MonoBehaviour
     {
         /// <summary>
-        /// Navigation modes
+        /// Các chế độ định vị (Navigation).
         /// </summary>
         public enum NavigationModes
         {
             /// <summary>
-            /// Not uses navmesh system.
+            /// Không sử dụng hệ thống Navmesh (Di chuyển đơn giản theo đường thẳng).
             /// </summary>
             Simple,
 
             /// <summary>
-            /// Uses navmesh system.
+            /// Sử dụng hệ thống Navmesh của Unity (Tính toán đường đi quanh vật cản).
             /// </summary>
             UseNavmesh
         }
 
         /// <summary>
-        /// Navigation ettings.
+        /// Các cài đặt điều hướng AI.
         /// </summary>
         [System.Serializable]
         public class AINavigationSettings
         {
             /// <summary>
-            /// The mode of the navigation.
+            /// Chế độ định vị hiện tại.
             /// </summary>
             public NavigationModes Mode;
 
             /// <summary>
-            /// <para>Used only if <see cref="Mode"/> is <see cref="NavigationModes.UseNavmesh"/>.</para>
-            /// The refresh rate of the navigation, used to avoid unecessary updates. 
+            /// <para>Chỉ sử dụng nếu <see cref="Mode"/> là <see cref="NavigationModes.UseNavmesh"/>.</para>
+            /// Tốc độ làm mới (giây) việc tính toán đường đi để tránh làm nặng CPU.
             /// </summary>
             [Space]
             public float NavigationRefreshRate;
         }
 
         /// <summary>
-        /// The character control data.
+        /// Cấu trúc dữ liệu điều khiển AI (Chứa các lệnh hành động).
         /// </summary>
         [System.Serializable]
         public struct AIControlData
         {
             /// <summary>
-            /// The character will run if is true.
+            /// AI có đang chạy (Sprint) hay không.
             /// </summary>
             public bool IsRunning;
 
             /// <summary>
-            /// The character stay on attack pose (IK mode if with an weapon).
+            /// AI có đang ở tư thế sẵn sàng chiến đấu (Aiming/Attack Pose) hay không.
             /// </summary>
             public bool IsAttackPose;
 
             /// <summary>
-            /// If true the character will attack, shot if have a weapon, attack if uses an melee weapon or punch if have no weapon.
+            /// Lệnh thực hiện tấn công (Bóp cò súng hoặc vung kiếm).
             /// </summary>
             public bool IsAttacking;
 
             /// <summary>
-            /// The character move direction.
+            /// Hướng mà AI muốn di chuyển tới.
             /// </summary>
             public Vector3 MoveToDirection;
 
             /// <summary>
-            /// The character look direction, usefull for aim to a target.
+            /// Hướng mà AI muốn nhìn vào (Mục tiêu).
             /// </summary>
             public Vector3 LookToDirection;
         }
 
-        private Vector3 _currentLookDirection;
+        private Vector3 _currentLookDirection; // Hướng nhìn hiện tại sau khi đã nội suy mượt mà
 
         /// <summary>
-        /// Speed to look to a target.
+        /// Tốc độ xoay hướng nhìn (Aim) của AI.
         /// </summary>
         [Min(1f)]
         public float AimSpeed;
 
         /// <summary>
-        /// If true, the AI can move.
+        /// Cho phép hoặc ngăn chặn AI di chuyển.
         /// </summary>
         public bool MoveEnabled;
 
         /// <summary>
-        /// The character navigation settings.
+        /// Cài đặt điều hướng của AI.
         /// </summary>
         public AINavigationSettings NavigationSettings;
 
         /// <summary>
-        /// The character body collider.
+        /// Collider của cơ thể nhân vật.
         /// </summary>
         public Collider BodyCollider { get; private set; }
 
         /// <summary>
-        /// The character control data.
-        /// Stores the AI behavior, like move direction, attack and any other necessary
-        /// data used to control the character.
+        /// Dữ liệu điều khiển nhân vật. 
+        /// Các lớp AI con sẽ ghi đè giá trị vào đây để điều khiển hành vi của nhân vật.
         /// </summary>
         protected AIControlData Control { get; set; }
 
         /// <summary>
-        /// The character that will be controlled by this AI.
+        /// Tham chiếu đến Controller điều khiển nhân vật thực tế của JUTPS.
         /// </summary>
         public JUCharacterController Character { get; private set; }
 
         /// <summary>
-        /// The AI character bounds.
+        /// Trọng tâm của AI (Vị trí trung tâm của Collider).
         /// </summary>
         public Vector3 Center
         {
@@ -119,7 +118,7 @@ namespace JU.CharacterSystem.AI
         }
 
         /// <summary>
-        /// Create an AI for <see cref="JUCharacterController"/>.
+        /// Constructor mặc định thiết lập các giá trị khởi tạo cơ bản.
         /// </summary>
         protected JUCharacterAIBase()
         {
@@ -134,98 +133,94 @@ namespace JU.CharacterSystem.AI
         }
 
         /// <summary>
-        /// Called by editor to validate properties.
+        /// Được gọi khi giá trị thay đổi trong Editor (Dùng để cập nhật tham chiếu).
         /// </summary>
         protected virtual void OnValidate()
         {
             FindComponents();
         }
 
-
-        /// <summary>
-        /// Called by editor to reset script properties.
-        /// </summary>
         protected virtual void Reset()
         {
         }
 
-        /// <summary>
-        /// Called on first object update.
-        /// </summary>
         protected virtual void Awake()
         {
             FindComponents();
 
+            // Kiểm tra xem nhân vật có gắn JUCharacterController không
             Debug.Assert(Character, $"The gameObject {name} hasn't a {typeof(JUCharacterController)} component.");
 
             _currentLookDirection = Character.transform.forward;
+
+            // QUAN TRỌNG: Tắt quyền điều khiển bằng bàn phím/tay cầm để AI chiếm quyền điều khiển
             Character.UseDefaultControllerInput = false;
         }
 
-        /// <summary>
-        /// Called on first object update after <see cref="Awake"/>.
-        /// </summary>
         protected virtual void Start()
         {
         }
 
-        /// <summary>
-        /// Called on object destroy.
-        /// </summary>
         protected virtual void OnDestroy()
         {
         }
 
-        /// <summary>
-        /// Called every frame update to update control logic.
-        /// </summary>
         protected virtual void Update()
         {
+            // Nếu AI chết, ngừng thực hiện logic
             if (Character.IsDead)
             {
                 enabled = false;
                 return;
             }
 
+            // Cập nhật hướng xoay người/hướng nhìn mượt mà
             UpdateCharacterLookAt();
+            // Chuyển các lệnh từ AI (Control) sang cho JUCharacterController thực thi
             UpdateCharacterControls();
         }
 
-        /// <summary>
-        /// Called on every frame to show debug informations.
-        /// </summary>
         protected virtual void OnDrawGizmos()
         {
         }
 
-        /// <summary>
-        /// Called on every frame to show debug informations if the GameObject is selected.
-        /// </summary>
         protected virtual void OnDrawGizmosSelected()
         {
         }
 
+        // Tự động tìm các thành phần cần thiết trên cùng GameObject
         private void FindComponents()
         {
             if (!BodyCollider) BodyCollider = GetComponent<Collider>();
             if (!Character) Character = GetComponent<JUCharacterController>();
         }
 
+        /// <summary>
+        /// Xử lý logic xoay hướng nhìn của AI một cách mượt mà theo thời gian.
+        /// </summary>
         private void UpdateCharacterLookAt()
         {
             var lookDirection = Control.LookToDirection;
 
+            // Nếu không có hướng nhìn xác định, mặc định nhìn về phía trước
             if (lookDirection.magnitude < 0.5f)
                 lookDirection = Character.transform.forward;
 
+            // Tính toán tốc độ xoay dựa trên góc lệch (Góc càng lớn xoay càng mượt)
             float angleToDirection = Vector3.Angle(_currentLookDirection.normalized, lookDirection);
             float lookToDirectionSpeed = Mathf.Clamp01(Time.deltaTime * (AimSpeed / Mathf.Max(angleToDirection, 0.01f)));
+
+            // Nội suy (Lerp) hướng nhìn
             _currentLookDirection = Vector3.Lerp(_currentLookDirection, lookDirection, lookToDirectionSpeed);
 
+            // Gán vị trí nhìn (LookAtPosition) cho nhân vật (cách 10 mét theo hướng nhìn)
             Vector3 lookAtPosition = transform.position + (_currentLookDirection * 10);
             Character.LookAtPosition = lookAtPosition;
         }
 
+        /// <summary>
+        /// Chuyển đổi dữ liệu từ cấu trúc AIControlData sang các hàm điều khiển của nhân vật.
+        /// </summary>
         private void UpdateCharacterControls()
         {
             bool attackPose = Control.IsAttackPose;
@@ -233,28 +228,32 @@ namespace JU.CharacterSystem.AI
             bool running = Control.IsRunning;
             Vector3 moveDirection = Control.MoveToDirection;
 
+            // Chuẩn hóa vector di chuyển
             bool isMoving = moveDirection.magnitude > 0.1f;
             if (isMoving)
             {
+                // Chỉ lấy hướng di chuyển trên mặt phẳng (không bay lên trời)
                 moveDirection = Vector3.ProjectOnPlane(moveDirection, Vector3.up);
                 moveDirection /= moveDirection.magnitude;
             }
 
-            // Force look to the the direction if is not in fire mode because the normal way to look to the direction
-            // works only if is on fire mode.
+            // Nếu không tấn công và không di chuyển, nhưng AI có lệnh nhìn vào đâu đó, thì bắt nhân vật nhìn về phía đó
             if (!Control.IsAttackPose && !isMoving && Control.LookToDirection.magnitude > 0)
                 Character.DoLookAt(transform.position + (Control.LookToDirection * 10));
 
-            Character.FiringModeIK = attackPose && Character.RightHandWeapon;
-            Character.FiringMode = attackPose && Character.RightHandWeapon;
+            // Cài đặt các thông số cho Character Controller
+            Character.FiringModeIK = attackPose && Character.RightHandWeapon; // Bật IK tay khi cầm súng
+            Character.FiringMode = attackPose && Character.RightHandWeapon;   // Bật chế độ bắn
+
+            // Thực hiện hành động sử dụng item (Bắn, chém, ném...)
             Character.DefaultUseOfAllItems(attacking, attacking, attacking, true, attacking, attacking, attacking && !Character.RightHandWeapon);
 
+            // Ngăn di chuyển nếu biến MoveEnabled bị tắt
             if (!MoveEnabled)
                 moveDirection = Vector3.zero;
 
+            // Thực thi lệnh di chuyển thực tế trên Controller
             Character._Move(moveDirection.x, moveDirection.z, running);
         }
     }
 }
-
-

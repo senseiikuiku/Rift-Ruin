@@ -45,19 +45,43 @@ namespace JUTPS.CameraSystems
 
             // Find the target to follow if is null.
             base.Start();
-            
-            if (TargetToFollow.root.TryGetComponent(out JUCharacterController JUcharacter))
-            {
-                characterTarget = JUcharacter;
 
-                // Only use the spline only if there was not a default transform to follow.
-                if (defaultTargetToFollow == null)
-                    TargetToFollow = characterTarget.HumanoidSpine;
+            //if (TargetToFollow.root.TryGetComponent(out JUCharacterController JUcharacter))
+            //{
+            //    characterTarget = JUcharacter;
+
+            //    // Only use the spline only if there was not a default transform to follow.
+            //    if (defaultTargetToFollow == null)
+            //        TargetToFollow = characterTarget.HumanoidSpine;
+            //}
+
+            // KIỂM TRA AN TOÀN: Chỉ chạy logic bên dưới nếu TargetToFollow đã được tìm thấy
+            if (TargetToFollow != null)
+            {
+                // Kiểm tra xem TargetToFollow có thuộc về một nhân vật JUTPS không
+                if (TargetToFollow.root.TryGetComponent(out JUCharacterController JUcharacter))
+                {
+                    characterTarget = JUcharacter;
+
+                    // Nếu ban đầu không có mục tiêu mặc định, ưu tiên bám theo xương cột sống (Spine)
+                    if (defaultTargetToFollow == null && characterTarget.HumanoidSpine != null)
+                    {
+                        TargetToFollow = characterTarget.HumanoidSpine;
+                    }
+                }
+            }
+            else
+            {
+                // In log nhẹ nhàng để biết Camera đang chờ, không gây lỗi đỏ làm treo script
+                Debug.Log("TPSCameraController: Chưa có mục tiêu, đang chờ Network Spawn gán Target...");
             }
         }
         //Rotate camera and update camera states
         protected virtual void Update()
         {
+            // THÊM DÒNG NÀY: Nếu chưa có mục tiêu thì không chạy code camera
+            if (TargetToFollow == null) return;
+
             SetRotationInput();
 
             if (FollowUpTarget)
@@ -113,6 +137,9 @@ namespace JUTPS.CameraSystems
         //Move camera pivot
         protected virtual void FixedUpdate()
         {
+            // THÊM DÒNG NÀY:Nếu chưa có mục tiêu thì không chạy code camera
+            if (TargetToFollow == null) return;
+
             //SetPivotCameraPosition(GetCurrentCameraState.GetCameraPivotPosition(TargetToFollow), true);
             if (characterTarget != null)
             {
@@ -139,6 +166,9 @@ namespace JUTPS.CameraSystems
         //Move real camera and change camera states
         protected virtual void LateUpdate()
         {
+            // THÊM DÒNG NÀY: Nếu chưa có mục tiêu thì không chạy code camera
+            if (TargetToFollow == null || mCamera == null) return;
+
             if (characterTarget) { if (characterTarget.IsAiming) return; }
             SetCameraPosition(GetCurrentCameraState.GetCameraPosition(mCamera.transform), false);
             SetCameraCollision(GetCurrentCameraState.CollisionLayers);

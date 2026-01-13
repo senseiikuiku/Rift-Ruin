@@ -42,6 +42,7 @@ namespace JUTPS.InventorySystem.UI
 
         public bool IsOpened { get; private set; }
 
+        // Hàm lấy và thiết lập TargetInventory
         public JUInventory TargetInventory
         {
             get => _targetInventory;
@@ -57,6 +58,7 @@ namespace JUTPS.InventorySystem.UI
             }
         }
 
+        // Khởi tạo và thiết lập các thành phần cần thiết.
         void Awake()
         {
             if (InventoryScrollViewContent != null) inventoryScrollViewRectTransform = InventoryScrollViewContent.GetComponent<RectTransform>();
@@ -71,14 +73,29 @@ namespace JUTPS.InventorySystem.UI
             if (TargetInventory == null)
             {
                 var playerObj = GameObject.FindGameObjectWithTag("Player");
-                TargetInventory = playerObj.GetComponent<JUInventory>();
+                // Kiểm tra xem có tìm thấy nhân vật không trước khi lấy Component
+                if (playerObj != null)
+                {
+                    TargetInventory = playerObj.GetComponent<JUInventory>();
+                }
+                else
+                {
+                    // Nếu không thấy nhân vật (do chưa chọn Host/Client), tạm thời dừng lại
+                    Debug.Log("Inventory Manager: Đang đợi nhân vật xuất hiện...");
+                    // Bạn có thể chọn giữ script hoạt động hoặc tắt đi tùy ý
+                    // gameObject.SetActive(false); 
+                    return;
+                }
             }
+
+            // Nếu vẫn không có Inventory đích, tắt UI kho đồ
             if (TargetInventory == null)
             {
                 gameObject.SetActive(false);
                 return;
             }
 
+            // Tạo và thiết lập các ô trong kho đồ
             if (Slots.Count == 0)
             {
                 CreateInventorySlots(ref Slots, SlotsQuantity, TargetInventory, SlotPrefab, InventoryScrollViewContent);
@@ -89,17 +106,34 @@ namespace JUTPS.InventorySystem.UI
                 SetSlots(ref Slots, TargetInventory);
             }
 
-
+            // Lên lịch làm mới kho đồ mỗi giây
             InvokeRepeating("RefreshInventory", 1, 1);
             if (Slots.Count > 0) { RenameAllSlotWithIndex(Slots); }
 
-            // Can't do it during the OnPause because the editor shows the cursor on press Escape, this break the logic.
+            // Lên lịch làm mới kho đồ mỗi giây
             InvokeRepeating(nameof(CheckCursorVisibility), 0.1f, 0.1f);
         }
+
+        // Cập nhật trạng thái kho đồ mỗi khung hình.
         private void Update()
         {
+            // Nếu chưa có Inventory đích, hãy thử tìm lại (dành cho lúc vừa mới bấm Host/Client)
+            if (TargetInventory == null)
+            {
+                var playerObj = GameObject.FindGameObjectWithTag("Player");
+                if (playerObj != null)
+                {
+                    TargetInventory = playerObj.GetComponent<JUInventory>();
+                    // Gọi lại Awake hoặc khởi tạo thủ công ở đây nếu cần
+                    Awake();
+                }
+                return; // Thoát Update nếu vẫn chưa có Target
+            }
+
+            // Nếu không có màn hình kho đồ hoặc nội dung ScrollView, thoát
             if (InventoryScreen == null || InventoryScrollViewContent == null) return;
 
+            // Cập nhật kích thước của ScrollView dựa trên số lượng ô
             inventoryScrollViewRectTransform.sizeDelta = new Vector3(inventoryScrollViewRectTransform.sizeDelta.x, Slots.Count * InventoryScrollViewContent.cellSize.y);
             if (IsLootView == true)
             {
@@ -159,6 +193,8 @@ namespace JUTPS.InventorySystem.UI
             else if (TargetInventory && !TargetInventory.PlayerInputs)
                 Debug.LogError($"The player inventory {TargetInventory.name} hasn't an input asset.");
         }
+
+        // Mở kho đồ và thiết lập trạng thái con trỏ chuột.
         public void OpenInventory()
         {
             if (InventoryScreen == null) return;
@@ -184,6 +220,8 @@ namespace JUTPS.InventorySystem.UI
             }
 
         }
+
+        // Đóng kho đồ và khôi phục trạng thái con trỏ chuột.
         public void ExitInventory()
         {
             if (InventoryScreen == null || !InventoryScreen.activeInHierarchy)
@@ -205,8 +243,10 @@ namespace JUTPS.InventorySystem.UI
             }
         }
 
+        // Tạo các ô trong kho đồ dựa trên số lượng và loại vật phẩm.
         public static void CreateInventorySlots(ref List<InventorySlotUI> SlotsList, int SlotQuantity, JUInventory inventory, InventorySlotUI slotPrefab, GridLayoutGroup scrollViewContentGridLayout)
         {
+            // Nếu SlotQuantity <= 0, tạo ô cho tất cả vật phẩm trong kho đồ
             if (SlotQuantity <= 0)
             {
                 for (int i = 0; i < inventory.AllItems.Length; i++)
@@ -215,7 +255,7 @@ namespace JUTPS.InventorySystem.UI
                     SlotsList.Add(slot);
                 }
             }
-            else
+            else // Tạo số ô theo SlotQuantity
             {
                 for (int i = 0; i < SlotQuantity; i++)
                 {
@@ -226,6 +266,7 @@ namespace JUTPS.InventorySystem.UI
             RenameAllSlotWithIndex(SlotsList);
         }
 
+        // Hàm hỗ trợ khởi tạo ô kho đồ.
         private static InventorySlotUI InstantiateSlot(InventorySlotUI SlotPrefab, InventorySlotUI.ItemArePlacedIn PlacedIn, int IDToDraw, Transform parent)
         {
             InventorySlotUI slot = (InventorySlotUI)Instantiate(SlotPrefab, parent);
@@ -233,6 +274,8 @@ namespace JUTPS.InventorySystem.UI
             slot.ItemIDToDraw = IDToDraw;
             return slot;
         }
+
+        // Đặt lại tên tất cả các ô trong danh sách theo chỉ số của chúng.
         private static void RenameAllSlotWithIndex(List<InventorySlotUI> SlotsList)
         {
             int i = 0;
@@ -242,6 +285,8 @@ namespace JUTPS.InventorySystem.UI
                 i++;
             }
         }
+
+        // Tạo các ô kho đồ mà không cần tham chiếu đến kho đồ cụ thể.
         public static void CreateInventorySlots(int SlotQuantity, InventorySlotUI slotPrefab, GridLayoutGroup scrollViewContentGridLayout)
         {
             if (SlotQuantity <= 0) return;
@@ -252,6 +297,8 @@ namespace JUTPS.InventorySystem.UI
                 slot.ItemIDToDraw = -1;
             }
         }
+
+        // Thiết lập các ô kho đồ để hiển thị vật phẩm từ kho đồ cụ thể.
         public static void SetSlots(ref List<InventorySlotUI> SlotsList, JUInventory inventory)
         {
             for (int i = 0; i < inventory.AllItems.Length; i++)
@@ -260,6 +307,8 @@ namespace JUTPS.InventorySystem.UI
                 SlotsList[i].RefreshSlot();
             }
         }
+
+        // Kích hoạt hoặc vô hiệu hóa tùy chọn trên tất cả các ô kho đồ.
         public void SetActiveSlotsOptions(bool enabled)
         {
             foreach (InventorySlotUI slot in Slots)
@@ -268,6 +317,8 @@ namespace JUTPS.InventorySystem.UI
                 slot.EnableOptionsPanel = enabled;
             }
         }
+
+        // Làm mới tất cả các ô kho đồ để hiển thị vật phẩm đúng.
         public void RefreshAllSlots()
         {
             foreach (InventorySlotUI currentSlot in Slots)
@@ -288,6 +339,7 @@ namespace JUTPS.InventorySystem.UI
             SetupNonDrawedItemsInSlots(NonDrawedItems, inventory: this);
         }
 
+        // Kiểm tra xem vật phẩm có đang được trang bị trong các ô trang bị không.
         private bool IsItemInEquipmentSlots(int itemID)
         {
             foreach (InventorySlotUI slot in EquipmentSlots)
@@ -297,6 +349,7 @@ namespace JUTPS.InventorySystem.UI
             return false;
         }
 
+        // Thiết lập các vật phẩm chưa được hiển thị trong các ô kho đồ.
         public static void SetupNonDrawedItemsInSlots(List<JUItem> nonDrawedItems, InventoryUIManager inventory)
         {
             if (nonDrawedItems.Count == 0 || inventory == null || inventory.Slots.Count == 0) return;
@@ -313,6 +366,8 @@ namespace JUTPS.InventorySystem.UI
             }
 
         }
+
+        // Lấy danh sách các vật phẩm chưa được hiển thị trong kho đồ.
         public static List<JUItem> GetNonDrawedItems(JUItem[] items, List<InventorySlotUI> slots, bool filterLeftHandItems)
         {
             List<JUItem> NonDrawed = items.ToList();
@@ -349,6 +404,8 @@ namespace JUTPS.InventorySystem.UI
 
             return NonDrawed;
         }
+
+        // Kiểm tra xem vật phẩm có đang được hiển thị trong bất kỳ ô kho đồ nào không.
         public static bool IsItemDrawingInSomeSlots(JUItem item, List<InventorySlotUI> slots, bool filterLeftHandItems)
         {
             bool isdrawing = false;
@@ -382,6 +439,8 @@ namespace JUTPS.InventorySystem.UI
 
             return isdrawing;
         }
+
+        // Lấy ô kho đồ trống đầu tiên trong danh sách.
         public static InventorySlotUI GetFirstEmptySlot(List<InventorySlotUI> slots)
         {
             for (int i = 0; i < slots.Count; i++)
@@ -391,12 +450,16 @@ namespace JUTPS.InventorySystem.UI
             Debug.LogWarning("Cannot find an empty slot in the list");
             return null;
         }
+
+        // Lấy tất cả các ô kho đồ con của đối tượng này.
         public List<InventorySlotUI> GetSlots()
         {
             List<InventorySlotUI> slots = new List<InventorySlotUI>();
             slots = gameObject.GetComponentsInChildren<InventorySlotUI>().ToList();
             return slots;
         }
+
+        // Xóa tất cả các ô kho đồ hiện có.
         public void ClearAllSlots()
         {
             foreach (InventorySlotUI slot in Slots)
@@ -405,6 +468,8 @@ namespace JUTPS.InventorySystem.UI
             }
             Slots.Clear();
         }
+
+        // Làm trống tất cả các ô kho đồ trong danh sách.
         public static void EmptyAllSlots(List<InventorySlotUI> SlotList)
         {
             foreach (InventorySlotUI slot in SlotList)
@@ -496,6 +561,8 @@ namespace JUTPS.InventorySystem.UI
 
         }
         */
+
+        // Lọc các ô kho đồ để loại bỏ vật phẩm cầm tay cho tay trái.
         public void FilterSlots(List<InventorySlotUI> slotList)
         {
             // >>> Remove Holdable Left Hand Items Only
@@ -518,6 +585,8 @@ namespace JUTPS.InventorySystem.UI
             }
         }
 
+
+        // Di chuyển một mục trong danh sách từ chỉ số cũ sang chỉ số mới.
         public static void Move<T>(List<T> list, int oldIndex, int newIndex)
         {
             T item = list[oldIndex];
@@ -525,6 +594,7 @@ namespace JUTPS.InventorySystem.UI
             list.Insert(newIndex, item);
         }
 
+        // Làm mới kho đồ, bao gồm lọc các ô nếu cần.
         public void RefreshInventory()
         {
             //if (InventoryScreen.activeInHierarchy == false) return;
@@ -534,6 +604,8 @@ namespace JUTPS.InventorySystem.UI
                 FilterSlots(Slots);
             }
         }
+
+        // Kiểm tra và lưu trạng thái hiển thị con trỏ chuột.
 
         private void CheckCursorVisibility()
         {

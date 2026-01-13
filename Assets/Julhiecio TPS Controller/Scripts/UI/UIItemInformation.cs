@@ -26,6 +26,8 @@ namespace JUTPS.InventorySystem.UI
         }
 
         // Update is called once per frame
+
+        // Xử lý cập nhật thông tin mục trong mỗi khung hình
         void Update()
         {
             if (Player == null)
@@ -36,8 +38,10 @@ namespace JUTPS.InventorySystem.UI
 
             if (Player.Inventory == null) return;
 
+            // Lấy mục hiện tại trong tay phải của người chơi
             CurrentItem = Player.HoldableItemInUseRightHand;
 
+            // Cập nhật giao diện dựa trên mục hiện tại
             if (CurrentItem == null)
             {
                 Icon.sprite = EmptySprite;
@@ -48,6 +52,7 @@ namespace JUTPS.InventorySystem.UI
             }
             else
             {
+                // Xử lý trường hợp vật phẩm là vũ khí
                 if (CurrentItem is Weapon)
                 {
                     Icon.sprite = CurrentItem.ItemIcon;
@@ -55,11 +60,14 @@ namespace JUTPS.InventorySystem.UI
                     ItemQuantity.text = CurrentItem.ItemQuantity + "/" + CurrentItem.MaxItemQuantity;
 
                     BulletLabel.SetActive(true);
+                    // Cập nhật số lượng đạn và thanh sức khỏe của vũ khí
                     BulletQuantity.text = ((Weapon)CurrentItem).BulletsAmounts + "/" + ((Weapon)CurrentItem).TotalBullets;
+                    // Cập nhật thanh sức khỏe của vật phẩm dựa trên số đạn còn lại
                     ItemHealth.fillAmount = (float)((Weapon)CurrentItem).BulletsAmounts / (float)((Weapon)CurrentItem).BulletsPerMagazine;
                     return;
                 }
 
+                // Xử lý trường hợp vật phẩm có thể cầm ném được
                 if (CurrentItem is JUHoldableItem || CurrentItem is ThrowableItem)
                 {
                     Icon.sprite = CurrentItem.ItemIcon;
@@ -67,8 +75,11 @@ namespace JUTPS.InventorySystem.UI
                     ItemQuantity.text = CurrentItem.ItemQuantity + "/" + CurrentItem.MaxItemQuantity;
 
                     BulletLabel.SetActive(false);
+                    // Cập nhật thanh sức khỏe của vật phẩm dựa trên số lượng hiện tại
                     ItemHealth.fillAmount = (float)CurrentItem.ItemQuantity / (float)CurrentItem.MaxItemQuantity;
                 }
+
+                // Xử lý trường hợp vũ khí cận chiến
 
                 if (CurrentItem is MeleeWeapon)
                 {

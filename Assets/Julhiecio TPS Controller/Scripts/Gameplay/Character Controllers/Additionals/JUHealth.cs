@@ -63,20 +63,25 @@ namespace JUTPS
         void Start()
         {
             LimitHealth();
+            // Kiểm tra trạng thái máu định kỳ
             InvokeRepeating(nameof(CheckHealthState), 0, 0.5f);
         }
+        // Giới hạn giá trị máu trong khoảng từ 0 đến MaxHealth
         private void LimitHealth()
         {
             Health = Mathf.Clamp(Health, 0, MaxHealth);
         }
 
+        // Gây sát thương cho đối tượng này với giá trị sát thương đơn giản
         public void DoDamage(float damage)
         {
             DoDamage(new DamageInfo { Damage = damage });
         }
 
+        // Gây sát thương cho đối tượng này
         public void DoDamage(DamageInfo damageInfo)
         {
+            // Giảm máu
             Health -= damageInfo.Damage;
             LimitHealth();
             Invoke(nameof(CheckHealthState), 0.016f);
@@ -89,9 +94,11 @@ namespace JUTPS
                 Destroy(fxParticle, 3);
             }
 
+            // Gọi sự kiện khi bị thương
             OnDamaged.Invoke(damageInfo);
         }
 
+        // Kiểm tra trạng thái máu và xử lý khi chết
         internal void CheckHealthState()
         {
             LimitHealth();
@@ -101,7 +108,7 @@ namespace JUTPS
                 Health = 0;
                 IsDead = true;
 
-                //Disable all damagers0
+                // Ân tất cả các Damager con khi nhân vật chết
                 foreach (Damager dmg in GetComponentsInChildren<Damager>()) dmg.gameObject.SetActive(false);
 
                 OnDeath.Invoke();
@@ -110,6 +117,7 @@ namespace JUTPS
             if (Health > 0) IsDead = false;
         }
 
+        // Đặt lại máu về giá trị tối đa
         public void ResetHealth()
         {
             Health = MaxHealth;

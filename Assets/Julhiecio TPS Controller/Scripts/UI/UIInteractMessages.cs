@@ -24,15 +24,32 @@ namespace JUTPS.UI
 
         private void Start()
         {
-            JUGameManager.PlayerController = JUGameManager.PlayerController;
-            if (JUGameManager.PlayerController.TryGetComponent(out CoverSystem.JUCoverController cover))
-            {
-                PlayerCover = cover;
-            }
+            //JUGameManager.PlayerController = JUGameManager.PlayerController;
+            //if (JUGameManager.PlayerController.TryGetComponent(out CoverSystem.JUCoverController cover))
+            //{
+            //    PlayerCover = cover;
+            //}
+
+            // Đảm bảo tin nhắn ẩn đi khi mới vào game
+            if (PickUpMessageObject != null) PickUpMessageObject.SetActive(false);
         }
         void Update()
         {
-            if (JUGameManager.PlayerController == null) { PickUpMessageObject.SetActive(false); return; }
+
+            // KIỂM TRA AN TOÀN: Nếu chưa có người chơi (chưa bấm Host), thoát ngay
+            if (JUGameManager.PlayerController == null)
+            {
+                if (PickUpMessageObject != null && PickUpMessageObject.activeSelf)
+                    PickUpMessageObject.SetActive(false);
+                return;
+            }
+
+            // Tự động tìm CoverController nếu chưa có (dành cho Multiplayer)
+            if (PlayerCover == null)
+            {
+                JUGameManager.PlayerController.TryGetComponent(out CoverSystem.JUCoverController cover);
+                PlayerCover = cover;
+            }
 
             if (PlayerCover != null)
             {
@@ -48,11 +65,12 @@ namespace JUTPS.UI
                 }
                 else
                 {
-                    PickUpMessageObject.SetActive(false);
+                    // Chỉ tắt nếu không có tương tác khác bên dưới
+                    // PickUpMessageObject.SetActive(false);
                 }
             }
 
-
+            // KIỂM TRA INVENTORY AN TOÀN
             if (JUGameManager.PlayerController.Inventory == null)
             {
                 PickUpMessageObject.SetActive(false);
@@ -87,17 +105,39 @@ namespace JUTPS.UI
                 }
             }
 
-            // >> Item Message
-            PickUpMessageObject.SetActive(JUGameManager.PlayerController.Inventory.ItemToPickUp != null);
+            //// >> Item Message
+            //PickUpMessageObject.SetActive(JUGameManager.PlayerController.Inventory.ItemToPickUp != null);
 
-            if (PickUpMessageObject.activeInHierarchy && SetMessagePositionToItemPosition)
+            //if (PickUpMessageObject.activeInHierarchy && SetMessagePositionToItemPosition)
+            //{
+            //    UIElementToWorldPosition.SetUIWorldPosition(PickUpMessageObject, JUGameManager.PlayerController.Inventory.ItemToPickUp.transform.position, Offset);
+            //}
+
+            //if (ShowItemNameOnText && WarningText && JUGameManager.PlayerController.Inventory.ItemToPickUp != null)
+            //{
+            //    WarningText.text = PickUpLabelText + JUGameManager.PlayerController.Inventory.ItemToPickUp.ItemName;
+            //}
+
+            // >> Item Message (Nhặt vật phẩm)
+            bool hasItemToPickUp = JUGameManager.PlayerController.Inventory.ItemToPickUp != null;
+            PickUpMessageObject.SetActive(hasItemToPickUp);
+
+            if (hasItemToPickUp)
             {
-                UIElementToWorldPosition.SetUIWorldPosition(PickUpMessageObject, JUGameManager.PlayerController.Inventory.ItemToPickUp.transform.position, Offset);
+                if (SetMessagePositionToItemPosition)
+                {
+                    UIElementToWorldPosition.SetUIWorldPosition(PickUpMessageObject, JUGameManager.PlayerController.Inventory.ItemToPickUp.transform.position, Offset);
+                }
+
+                if (ShowItemNameOnText && WarningText)
+                {
+                    WarningText.text = PickUpLabelText + JUGameManager.PlayerController.Inventory.ItemToPickUp.ItemName;
+                }
             }
-
-            if (ShowItemNameOnText && WarningText && JUGameManager.PlayerController.Inventory.ItemToPickUp != null)
+            else if (PlayerCover == null || PlayerCover.CurrentCoverTrigger == null)
             {
-                WarningText.text = PickUpLabelText + JUGameManager.PlayerController.Inventory.ItemToPickUp.ItemName;
+                // Nếu không nhặt đồ cũng không núp cover thì mới tắt hẳn UI
+                PickUpMessageObject.SetActive(false);
             }
         }
     }

@@ -1,9 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace JU.CharacterSystem.AI.HearSystem
 {
     /// <summary>
-    /// Play a sound that can alert nearest AIs that have <see cref="HearSensor"/>.
+    /// Phát ra một âm thanh có thể cảnh báo các AI ở gần có sở hữu <see cref="HearSensor"/> (Cảm biến thính giác).
     /// </summary>
     [AddComponentMenu("JU TPS/AI/Hear Sensor/Sound Source")]
     public class JU_AI_SoundSource : MonoBehaviour
@@ -13,88 +13,88 @@ namespace JU.CharacterSystem.AI.HearSystem
         private bool _played;
 
         /// <summary>
-        /// The distance that AIs can detect the sound.
+        /// Khoảng cách mà AI có thể phát hiện ra âm thanh.
         /// </summary>
         [Header("Sound")]
         public float SoundDistance;
 
         /// <summary>
-        /// The sound tag.
+        /// Thẻ (Tag) của âm thanh.
         /// </summary>
         public JUTag SoundTag;
 
         /// <summary>
-        /// Automatic play sound on instantied.
+        /// Tự động phát âm thanh ngay khi vừa được tạo ra (instantiated).
         /// </summary>
         [Header("Automatic Play")]
         public bool PlayOnSpawn;
 
         /// <summary>
-        /// Automatic play sound on destroyed.
+        /// Tự động phát âm thanh khi bị hủy kích hoạt (destroyed).
         /// </summary>
         public bool PlayOnDestroy;
 
         /// <summary>
-        /// Automatic play sound on component enabled.
+        /// Tự động phát âm thanh khi component này được bật (enabled).
         /// </summary>
         public bool PlayOnEnable;
 
         /// <summary>
-        /// Automatic play sound on component disabled.
+        /// Tự động phát âm thanh khi component này bị tắt (disabled).
         /// </summary>
         public bool PlayOnDisable;
 
         /// <summary>
-        /// The repeat time to play sound every X seconds.
+        /// Thời gian lặp lại để phát âm thanh sau mỗi X giây.
         /// </summary>
         [Min(0)]
         public float RepeatRate;
 
         /// <summary>
-        /// The min time to repeat the sound. Useful on play sound on collide
-        /// to avoid multiple calls.
+        /// Thời gian tối thiểu để lặp lại âm thanh. Hữu ích khi phát âm thanh do va chạm
+        /// để tránh việc gọi hàm quá nhiều lần liên tục.
         /// </summary>
         public float MinRepeatTime;
 
         /// <summary>
-        /// Play sound on trigger enter.
+        /// Phát âm thanh khi đi vào vùng kích hoạt (trigger enter).
         /// </summary>
         [Header("Play On Collision")]
         public bool PlayOnTriggerEnter;
 
         /// <summary>
-        /// Play sound on trigger exit.
+        /// Phát âm thanh khi rời khỏi vùng kích hoạt (trigger exit).
         /// </summary>
         public bool PlayOnTriggerExit;
 
         /// <summary>
-        /// Play sound on collision enter.
+        /// Phát âm thanh khi bắt đầu va chạm (collision enter).
         /// </summary>
         public bool PlayOnCollisionEnter;
 
         /// <summary>
-        /// Play sound on collision exit.
+        /// Phát âm thanh khi kết thúc va chạm (collision exit).
         /// </summary>
         public bool PlayOnCollisionExit;
 
         /// <summary>
-        /// Tags to ignore collision with specific objects.
+        /// Các thẻ (tags) cần bỏ qua không tính va chạm với các đối tượng cụ thể.
         /// </summary>
         public string[] IgnoreCollisionTags;
 
         /// <summary>
-        /// Sfx to play audio, must be a different gameObject.
+        /// Nguồn âm thanh (AudioSource) để phát hiệu ứng, phải là một gameObject khác.
         /// </summary>
         [Header("SFX")]
         public AudioSource SfxSource;
 
         /// <summary>
-        /// Life time of the spawned SFX.
+        /// Thời gian tồn tại của hiệu ứng âm thanh (SFX) sau khi được tạo ra.
         /// </summary>
         public float SfxLifeTime;
 
         /// <summary>
-        /// Create instance.
+        /// Khởi tạo thực thể.
         /// </summary>
         public JU_AI_SoundSource()
         {

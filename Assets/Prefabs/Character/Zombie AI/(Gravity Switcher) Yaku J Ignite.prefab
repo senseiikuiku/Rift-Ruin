@@ -2471,6 +2471,7 @@ GameObject:
   - component: {fileID: 2364756289678076137}
   - component: {fileID: 3843840508022957061}
   - component: {fileID: 4604447036573288858}
+  - component: {fileID: 2042862270808976797}
   m_Layer: 9
   m_Name: (Gravity Switcher) Yaku J Ignite
   m_TagString: Enemy
@@ -2683,7 +2684,7 @@ MonoBehaviour:
   SetRigidbodyVelocity: 0
   FireModeMaxTime: 1
   Speed: 5
-  WalkSpeed: 0.5
+  WalkSpeed: 1.5
   CrouchSpeed: 0.4
   RunSpeed: 1.7
   SprintingSpeedMax: 1.9
@@ -3319,13 +3320,13 @@ MonoBehaviour:
     SearhLastTargetTime: 15
   FieldOfView:
     Enabled: 1
-    Distance: 10
-    Angle: 90
+    Distance: 15
+    Angle: 100
     RefreshRate: 0.5
     MaxDetections: 10
     TargetsLayer:
       serializedVersion: 2
-      m_Bits: 768
+      m_Bits: 512
     ObstaclesLayer:
       serializedVersion: 2
       m_Bits: 67585
@@ -3411,6 +3412,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5479cab4ae27bc458de9e8bbcd05269, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KillReporter
+--- !u!114 &2042862270808976797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5357646463186033209}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a36dbca78d29c0b459ccd9847b0a137b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::JUTPS.AI.ZombieDifficultyAdapter
 --- !u!1 &5434480353802540585
 GameObject:
   m_ObjectHideFlags: 0

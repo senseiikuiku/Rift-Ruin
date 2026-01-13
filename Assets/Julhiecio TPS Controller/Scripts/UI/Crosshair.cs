@@ -49,67 +49,108 @@ namespace JUTPS.UI
 
         protected virtual void Start()
         {
-            //Assign this instance
+            // Gán instance
             Instance = this;
 
-            //Assign camera
+            // Tìm Camera (Sử dụng API mới để tránh Warning)
             cameraController = FindAnyObjectByType<JUCameraController>();
 
-            //if theres no player, theres nothing to 
-            var playerobject = GameObject.FindGameObjectWithTag("Player");
-            player = playerobject.GetComponent<JUCharacterController>();
-            if (player == null) return;
+            // THAY ĐỔI TẠI ĐÂY: Không tìm Player ngay lập tức vì có thể chưa Spawn
+            // Chúng ta sẽ dời việc kiểm tra Player vào Update để script không bị lỗi Start
 
-            //Save Crosshairs start positions
-            CrosshairsStartPositions = GetCrosshairPositions(Crosshairs);
+            ////if theres no player, theres nothing to 
+            //var playerobject = GameObject.FindGameObjectWithTag("Player");
+            //player = playerobject.GetComponent<JUCharacterController>();
+            //if (player == null) return;
 
-            //Save Start Scale
-            CrosshairStartScale = Crosshairs[0].transform.localScale;
+            ////Save Crosshairs start positions
+            //CrosshairsStartPositions = GetCrosshairPositions(Crosshairs);
 
-            //Get crosshair center point
+            ////Save Start Scale
+            //CrosshairStartScale = Crosshairs[0].transform.localScale;
+
+            // Lưu vị trí bắt đầu của các thanh Crosshair
+            if (Crosshairs != null && Crosshairs.Length > 0)
+            {
+                CrosshairsStartPositions = GetCrosshairPositions(Crosshairs);
+                CrosshairStartScale = Crosshairs[0].transform.localScale;
+            }
+
+            // Lấy các thành phần UI cơ bản 
             CrosshairCenterPoint = GetComponent<Image>();
             ParentCanvas = GetComponentInParent<Canvas>();
         }
         protected virtual void Update()
         {
-            //if theres no player, no crosshair update
-            if (player == null) return;
+            // KIỂM TRA AN TOÀN: Nếu chưa gán Player, thử tìm lại từ GameManager
+            if (player == null)
+            {
+                // Sử dụng JUGameManager để lấy Player đã được Assign bởi MultiplayerCameraAssigner
+                if (JUGameManager.PlayerController != null)
+                {
+                    player = JUGameManager.PlayerController;
+                }
+                else
+                {
+                    // Nếu vẫn chưa có Player (chưa Host), ẩn Crosshair và thoát
+                    SetActiveCrosshair(false);
+                    return;
+                }
+            }
+
+            // Nếu Camera bị null (do spawn chậm), thử tìm lại
+            if (cameraController == null)
+            {
+                cameraController = Object.FindAnyObjectByType<JUCameraController>();
+            }
+
+            // Cập nhật trạng thái đối tượng dưới tâm ngắm
             UpdateObjectOnCrosshairPoint();
+            // Cập nhật màu sắc của tâm ngắm
             UpdateCrosshairColor();
+            // Cập nhật vị trí và kích thước của tâm ngắm
             UpdateCrosshair();
         }
+
+        // Cập nhật vị trí và kích thước của tâm ngắm
         protected virtual void UpdateCrosshair()
         {
-            //If no crosshair, no update
+            // Nếu không có thanh Crosshair nào, thoát
             if (Crosshairs.Length == 0) return;
 
-            //Get precision
+            // Lấy vũ khí đang sử dụng
             Weapon WeaponInUse = (player.LeftHandWeapon == null) ? player.RightHandWeapon : player.LeftHandWeapon;
             SmoothedWeaponPrecision = GetWeaponPrecisionValue(SmoothedWeaponPrecision, WeaponInUse, CrosshairChangeSpeed);
 
             if (Crosshairs.Length > 1)
             {
-                //Dynamic update crosshair points position towards crosshair center
+                // Cập nhật màu sắc của tâm ngắm
+                UpdateCrosshairColor();
+
+                // Cập nhật vị trí và kích thước của tâm ngắm
                 MoveTowardsCenter(Crosshairs, CrosshairsStartPositions, SmoothedWeaponPrecision);
             }
             else
             {
-                //Resize crosshair to precision
+                // Cập nhật vị trí và kích thước của tâm ngắm
                 ResizeCrosshair(Crosshairs[0], SmoothedWeaponPrecision);
             }
 
-            //Update visibility
+            // Ẩn/Hiện tâm ngắm dựa trên trạng thái bắn và ngắm
             if (OnlyShowOnFireMode)
             {
+                // Chỉ hiển thị khi ở chế độ bắn
                 SetActiveCrosshair(player.FiringMode && !player.IsAiming);
             }
             else
             {
+                // Ẩn tâm ngắm khi không có vũ khí
                 HideCrosshairOnNoWeaponUsing();
+                // Ẩn tâm ngắm khi đang ngắm
                 HideCrosshairOnAiming();
             }
 
-            //Update CrosshairPosition
+            // Cập nhật vị trí của tâm ngắm theo con trỏ chuột
             if (FollowMousePosition && Mouse.current != null)
             {
                 Vector2 movePos;
@@ -118,13 +159,15 @@ namespace JUTPS.UI
 
                 Vector3 mousePosOnUi = ParentCanvas.transform.TransformPoint(movePos);
 
-                //Set fake mouse Cursor
+                // them offset z để tránh bị che khuất
                 CrosshairCenterPoint.transform.position = mousePos;
 
-                //Move the Object/Panel
+                // Cập nhật vị trí của từng thanh Crosshair
                 transform.position = mousePos;
             }
         }
+
+        // Cập nhật màu sắc của tâm ngắm dựa trên đối tượng dưới tâm ngắm
         protected virtual void UpdateCrosshairColor()
         {
             if (!ChangeColor) return;
@@ -145,6 +188,7 @@ namespace JUTPS.UI
             CrosshairCenterPoint.color = color;
         }
 
+        // Cập nhật đối tượng dưới tâm ngắm
         protected virtual void UpdateObjectOnCrosshairPoint()
         {
             if (cameraController == null)
@@ -153,7 +197,9 @@ namespace JUTPS.UI
                 return;
             }
             //Debug.Log(ObjectOnCrosshairPoint);
+            // Lấy đối tượng dưới tâm ngắm
             GetObjectOnCrosshairPoint(cameraController.mCamera, cameraController.CrosshairRaycastLayerMask, out ObjectOnCrosshairPoint);
+            // Lọc đối tượng là chính người chơi
             if (ObjectOnCrosshairPoint != null && FilterPlayer)
             {
                 if (ObjectOnCrosshairPoint.layer == 15)
@@ -169,21 +215,25 @@ namespace JUTPS.UI
                 }
             }
         }
+        // Khi vô hiệu hóa script, đặt đối tượng dưới tâm ngắm về null
         private void OnDisable()
         {
             ObjectOnCrosshairPoint = null;
         }
 
+        // Lấy màu sắc hiện tại của tâm ngắm dựa trên đối tượng dưới tâm ngắm
         public Color GetCurrentCrosshairColor(GameObject ObjectOnCrosshairPoint)
         {
             Color color = NormalColor;
             if (ObjectOnCrosshairPoint == null) return color;
-
+            // Kiểm tra nếu đang ngắm vào đối tượng không thể bắn
             if (IsAimingOnNonShootableObject(ObjectOnCrosshairPoint, NoShootableTags)) color = NonShootableColor;
+            // Kiểm tra nếu đang ngắm vào đối tượng có thể bắn
             if (IsAimingOnShootableObject(ObjectOnCrosshairPoint, TargetTags)) color = ShootableColor;
 
             return color;
         }
+        // Lấy đối tượng dưới tâm ngắm
         public static void GetObjectOnCrosshairPoint(Camera camera, LayerMask CrosshairRaycastLayerMask, out GameObject ObjectOnMousePosition)
         {
             if (Mouse.current == null)
@@ -194,7 +244,7 @@ namespace JUTPS.UI
 
             ObjectOnMousePosition = null;
 
-            //Create a ray on mouse position
+            // Tạo tia từ vị trí con trỏ chuột
             Ray MouseRay = camera.ScreenPointToRay(Mouse.current.position.value);
             RaycastHit hit;
             if (Physics.Raycast(MouseRay, out hit, 1000, CrosshairRaycastLayerMask))
@@ -202,6 +252,7 @@ namespace JUTPS.UI
                 ObjectOnMousePosition = hit.collider.gameObject;
             }
         }
+        // Kiểm tra nếu đang ngắm vào đối tượng có thể bắn
         public static bool IsAimingOnShootableObject(GameObject ObjectOnMousePosition, string[] TargetList)
         {
             bool isAimingOnTarget = false;
@@ -213,6 +264,7 @@ namespace JUTPS.UI
 
             return isAimingOnTarget;
         }
+        // Kiểm tra nếu đang ngắm vào đối tượng không thể bắn
         public static bool IsAimingOnNonShootableObject(GameObject ObjectOnMousePosition, string[] FriendList)
         {
             bool isAimingOnFriend = false;
@@ -226,7 +278,7 @@ namespace JUTPS.UI
         }
 
 
-
+        // Cập nhật vị trí của các thanh Crosshair
         public void MoveTowardsCenter(Image[] crosshairs, List<Vector3> crosshairStartPositions, float precision)
         {
             for (int i = 0; i < crosshairs.Length; i++)
@@ -235,6 +287,7 @@ namespace JUTPS.UI
                 crosshairs[i].transform.localPosition = crosshairStartPositions[i] + normal.normalized * precision;
             }
         }
+        // Cập nhật kích thước của tâm ngắm
         public void ResizeCrosshair(Image crosshair, float precision)
         {
             if (crosshair == null) return;
@@ -242,6 +295,7 @@ namespace JUTPS.UI
             float CurrentSize = CrosshairStartScale.x + precision * CrosshairSensibility;
             crosshair.transform.localScale = new Vector3(CurrentSize, CurrentSize, CurrentSize);
         }
+        // Ẩn/Hiện tâm ngắm
         public void SetActiveCrosshair(bool enabled)
         {
             if (Crosshairs.Length < 2)
@@ -267,7 +321,7 @@ namespace JUTPS.UI
             if (!HideOnAiming || (HideOnNoWeaponUsing && player.HoldableItemInUseRightHand == null)) return;
             SetActiveCrosshair(!player.IsAiming);
         }
-
+        //  Lấy vị trí của các thanh Crosshair
         public List<Vector3> GetCrosshairPositions(Image[] crosshairs)
         {
             List<Vector3> crosshairPositions = new List<Vector3>();
@@ -277,6 +331,7 @@ namespace JUTPS.UI
             }
             return crosshairPositions;
         }
+        // Lấy giá trị độ chính xác của vũ khí
         public static float GetWeaponPrecisionValue(float Current, Weapon WeaponInUse, float Speed = 8)
         {
             if (Instance == null)

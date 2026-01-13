@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using JU.CharacterSystem.AI.HearSystem;
 
 namespace JU.CharacterSystem.AI.Examples
@@ -12,15 +12,16 @@ namespace JU.CharacterSystem.AI.Examples
         private Vector3 _heardSoundPosition;
 
         /// <summary>
-        /// The sensor.
+        /// Cam biến nghe âm thanh của nhân vật AI.
         /// </summary>
         public HearSensor HearSensor;
 
         /// <summary>
-        /// The action that control the AI to move to the position of the heard sound.
+        /// Hành động này điều khiển trí tuệ nhân tạo di chuyển đến vị trí phát ra âm thanh.
         /// </summary>
         public FollowPoint FollowHearPosition;
 
+        // Khởi tạo trí tuệ nhân tạo và thiết lập cảm biến nghe âm thanh.
         protected override void Start()
         {
             base.Start();
@@ -32,11 +33,13 @@ namespace JU.CharacterSystem.AI.Examples
             FollowHearPosition.Setup(this);
         }
 
+        // Dọn dẹp khi trí tuệ nhân tạo bị hủy.
         protected override void OnDestroy()
         {
             base.OnDestroy();
         }
 
+        // Cập nhật trí tuệ nhân tạo mỗi khung hình.
         protected override void Update()
         {
             base.Update();

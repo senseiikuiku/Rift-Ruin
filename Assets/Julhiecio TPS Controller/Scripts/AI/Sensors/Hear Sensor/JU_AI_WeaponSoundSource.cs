@@ -1,10 +1,10 @@
-using JUTPS.WeaponSystem;
+﻿using JUTPS.WeaponSystem;
 using UnityEngine;
 
 namespace JU.CharacterSystem.AI.HearSystem
 {
     /// <summary>
-    /// Emit an alert if the <see cref="Weapon"/> shots for closest AI character that have <see cref="HearSensor"/>.
+    /// Phát ra cảnh báo nếu <see cref="Weapon"/> các bức ảnh dành cho nhân vật AI gần nhất có <see cref="HearSensor"/>.
     /// </summary>
     [AddComponentMenu("JU TPS/AI/Hear Sensor/Weapon Sound Source")]
     [RequireComponent(typeof(Weapon))]
@@ -13,23 +13,24 @@ namespace JU.CharacterSystem.AI.HearSystem
         private Weapon _weapon;
 
         /// <summary>
-        /// The max distance to be detected by an AI when the weapon shots.
+        /// Khoảng cách tối đa mà trí tuệ nhân tạo có thể phát hiện được khi vũ khí khai hỏa.
         /// </summary>
         public float MaxSoundDistance;
 
         /// <summary>
-        /// The sound tag.
+        /// Tag âm thanh.
         /// </summary>
         public JUTag SoundTag;
 
         /// <summary>
-        /// Create component instance.
+        /// Tạo một nguồn âm thanh vũ khí mới.
         /// </summary>
         public JU_AI_WeaponSoundSource()
         {
             MaxSoundDistance = 20;
         }
 
+        // Khởi tạo và đăng ký sự kiện bắn súng
         private void Start()
         {
             _weapon = GetComponent<Weapon>();
@@ -39,6 +40,7 @@ namespace JU.CharacterSystem.AI.HearSystem
             _weapon.OnShot.AddListener(OnShot);
         }
 
+        // Xử lý sự kiện bắn súng
         private void OnShot()
         {
             HearSensor.AddSoundSource(_weapon.transform.position, MaxSoundDistance, _weapon.TPSOwner.gameObject, SoundTag);

@@ -11,7 +11,7 @@ using UnityEngine.UI;
 namespace JUTPS.UI
 {
     /// <summary>
-    /// The game pause screen.
+    /// Trò chơi tạm dừng hoàn toàn.
     /// </summary>
     public class JU_UIPause : MonoBehaviour
     {
@@ -20,59 +20,68 @@ namespace JUTPS.UI
         private bool _defaultMouseVisible;
         private bool _defaultMouseLock;
 
+        // Thêm biến này vào phần Header Screens
+        [Header("Canvas Group Settings")]
+        public CanvasGroup pauseCanvasGroup;
+        public float fadeDuration = 0.3f;
+
+        // Thêm Canvas Group cho Settings để bỏ SetActive
+        private CanvasGroup settingsCanvasGroup;
+
         /// <summary>
-        /// The scene name of the menu scene, used when the <see cref="MainMenuButton"/> is pressed.
+        /// Tên cảnh của cảnh menu, được sử dụng khi <see cref="MainMenuButton"/> được nhấn.
         /// </summary>
         [Header("Scenes")]
         [SerializeField] private string MainMenuScene;
 
         /// <summary>
-        /// The Pause screen UI.
+        /// Trò chơi tạm dừng hoàn toàn.
         /// </summary>
         [Header("Screens")]
         public GameObject PauseScreen;
 
         /// <summary>
-        /// The game settings screen, can be accessed by the pause screen.
+        /// Bạn có thể truy cập màn hình cài đặt trò chơi thông qua màn hình tạm dừng.
         /// </summary>
         public JU_UISettings SettingsScreen;
 
         /// <summary>
-        /// The "continue game" button, used to unpause the game calling <seealso cref="JUPauseGame.Continue"/>.
+        /// Nút "tiếp tục trò chơi" được dùng để bỏ tạm dừng trò chơi. <seealso cref="JUPauseGame.Continue"/>.
         /// </summary>
         [Header("Buttons")]
         public Button ContinueButton;
         public Button[] PlayAgainButton;
 
         /// <summary>
-        /// The pause button on game HUD.
+        /// Nút tạm dừng trên giao diện trò chơi.
         /// </summary>
         public Button PauseButton;
 
         /// <summary>
-        /// The "game settings" button, shows the settings screen. <para/>
+        ///Nút "cài đặt trò chơi" sẽ hiển thị màn hình cài đặt. <para/>
         /// See <seealso cref="JU_UISettings"/>
         /// </summary>
         public Button SettingsButton;
 
         /// <summary>
-        /// The button used to go to the game main menu.
+        /// Nút này dùng để quay lại menu chính của trò chơi.
         /// </summary>
         public Button MainMenuButton;
 
         /// <summary>
-        /// The button used to close the game application.
+        /// Nút này dùng để đóng ứng dụng trò chơi.
         /// </summary>
         public Button ExitGameButton;
 
         /// <summary>
-        /// The game pause system.
+        /// Hệ thống tạm dừng trò chơi.
         /// </summary>
         public JUPauseGame PauseManager
         {
             get => JUPauseGame.Instance;
         }
 
+        // Kiểm tra xem trò chơi có đang được tập trung hay không.
         private bool IsGameFocused
         {
 #if UNITY_EDITOR
@@ -82,19 +91,26 @@ namespace JUTPS.UI
 #endif
         }
 
+        // Khởi tạo và thiết lập các sự kiện.
         private void Awake()
         {
             if (Instance == null) Instance = this;
             else Destroy(gameObject);
 
+            // Lấy Canvas Group của Settings nếu có
+            if (SettingsScreen != null)
+                settingsCanvasGroup = SettingsScreen.GetComponent<CanvasGroup>();
+
             Setup();
 
-            // Can't do it during the OnPause because the editor shows the cursor on press Escape, this break the logic.
+            // Không thể thực hiện trong OnPause vì trình biên tập hiển thị con trỏ khi nhấn Escape, điều này làm hỏng logic.
             InvokeRepeating(nameof(CheckCursorVisibility), 0.1f, 0.1f);
 
+            // Đăng ký sự kiện nhập để phát hiện khi người chơi nhấn phím.
             InputSystem.onEvent += OnPressSomething;
         }
 
+        // Chờ đến cuối khung hình để kiểm tra trạng thái con trỏ.
         private IEnumerator Start()
         {
             yield return new WaitForEndOfFrame();
@@ -102,12 +118,14 @@ namespace JUTPS.UI
             StartCoroutine(FixCursorVisibility());
         }
 
+        // Hủy đăng ký các sự kiện khi đối tượng bị hủy.
         private void OnDestroy()
         {
             Unsetup();
             InputSystem.onEvent -= OnPressSomething;
         }
 
+        // Sửa lỗi hiển thị con trỏ khi trò chơi được tập trung lại.
         IEnumerator FixCursorVisibility()
         {
             yield return new WaitForEndOfFrame();
@@ -123,6 +141,7 @@ namespace JUTPS.UI
             }
         }
 
+        // Xử lý sự kiện khi có bất kỳ phím nào được nhấn.
         private void OnPressSomething(InputEventPtr eventPtr, InputDevice device)
         {
             if (!(device is Keyboard keyboard))
@@ -134,9 +153,27 @@ namespace JUTPS.UI
             }
         }
 
+        // Thiết lập các sự kiện cho các nút
         private void Setup()
         {
-            if (PauseScreen) PauseScreen.gameObject.SetActive(false);
+            // Thiết lập Pause Screen
+            if (pauseCanvasGroup != null)
+            {
+                pauseCanvasGroup.alpha = 0;
+                pauseCanvasGroup.interactable = false;
+                pauseCanvasGroup.blocksRaycasts = false;
+                PauseScreen.SetActive(true);
+            }
+
+            // Thiết lập Settings Screen (Dùng Canvas Group thay vì SetActive false)
+            if (settingsCanvasGroup != null)
+            {
+                settingsCanvasGroup.alpha = 0;
+                settingsCanvasGroup.interactable = false;
+                settingsCanvasGroup.blocksRaycasts = false;
+                SettingsScreen.gameObject.SetActive(true);
+            }
+
             if (ContinueButton) ContinueButton.onClick.AddListener(OnPressContinueButton);
             // Vòng lặp cho Mảng Nút PlayAgain
             if (PlayAgainButton != null)
@@ -162,11 +199,13 @@ namespace JUTPS.UI
 
             if (SettingsScreen)
             {
-                SettingsScreen.gameObject.SetActive(false);
+                // Xóa các Listener cũ nếu có để tránh trùng lặp
+                SettingsScreen.OnClose.RemoveAllListeners();
                 SettingsScreen.OnClose.AddListener(OnCloseSettingsScreen);
             }
         }
 
+        // Hủy đăng ký các sự kiện đã thiết lập
         private void Unsetup()
         {
             if (PauseManager)
@@ -176,41 +215,74 @@ namespace JUTPS.UI
             }
         }
 
+        // Hàm xử lý khi đóng màn hình
         private void OnCloseSettingsScreen()
         {
+            StopAllCoroutines();
+            // Ẩn Settings mượt mà
+            if (settingsCanvasGroup) StartCoroutine(FadeCanvas(settingsCanvasGroup, 0, false));
+            // Hiện Pause mượt mà
+            if (pauseCanvasGroup) StartCoroutine(FadeCanvas(pauseCanvasGroup, 1, true));
+
             if (PauseManager)
                 PauseManager.ControlsEnabled = true;
 
-            PauseScreen.gameObject.SetActive(true);
         }
 
+        // Xử lý khi trò chơi bị tạm dừng (Bấm Esc lần 1)
         private void OnPauseGame()
         {
-            if (!PauseScreen)
-                return;
+            // CƯỠNG ÉP: Đảm bảo Settings luôn Active để không bị mất hiệu ứng Fade
+            if (SettingsScreen != null)
+            {
+                SettingsScreen.gameObject.SetActive(true);
+                if (settingsCanvasGroup != null)
+                {
+                    // Khi mới bấm Esc để vào Pause chính, ta ép Alpha Settings về 0
+                    settingsCanvasGroup.alpha = 0;
+                    settingsCanvasGroup.interactable = false;
+                    settingsCanvasGroup.blocksRaycasts = false;
+                }
+            }
+
+            if (!pauseCanvasGroup) return;
 
             JUCameraController.LockMouse(false, false);
-            PauseScreen.SetActive(true);
+            StopAllCoroutines();
+
+            // Hiện bảng Pause chính
+            StartCoroutine(FadeCanvas(pauseCanvasGroup, 1, true));
         }
 
+        // Xử lý khi thoát Pause (Bấm Esc lần 2 hoặc bấm Continue)
         private void OnContinueGame()
         {
-            if (!PauseScreen)
-                return;
+            // CƯỠNG ÉP: Giữ Settings Active để nó kịp chạy Fade Out
+            if (SettingsScreen != null) SettingsScreen.gameObject.SetActive(true);
+
+            if (!pauseCanvasGroup) return;
 
             JUCameraController.LockMouse(Lock: _defaultMouseLock, Hide: !_defaultMouseVisible);
 
             if (UIManager.Instance != null)
                 UIManager.Instance.IsUIWinOrLose(false);
 
-            PauseScreen.SetActive(false);
+            StopAllCoroutines();
+
+            // Fade cả Pause và Settings về 0 mượt mà
+            StartCoroutine(FadeCanvas(pauseCanvasGroup, 0, false));
+            if (settingsCanvasGroup) StartCoroutine(FadeCanvas(settingsCanvasGroup, 0, false));
         }
 
+
+
+        // Xử lý khi nút tiếp tục được nhấn
         private void OnPressContinueButton()
         {
             JUPauseGame.Continue();
         }
 
+        // Xử lý khi nút chơi lại được nhấn
         private void OnPressPlayAgainButton()
         {
             if (JUPauseGame.IsPaused)
@@ -232,37 +304,49 @@ namespace JUTPS.UI
             }
         }
 
+        // Xử lý khi nút tạm dừng được nhấn
         private void OnPressPauseButton()
         {
             JUPauseGame.Pause();
         }
 
+        // Xử lý khi bấm nút Settings (Từ bảng Pause chuyển sang Settings)
         private void OnPressSettingsButton()
         {
-            if (SettingsScreen) SettingsScreen.gameObject.SetActive(true);
-            if (PauseScreen) PauseScreen.gameObject.SetActive(false);
+            if (SettingsScreen != null) SettingsScreen.gameObject.SetActive(true);
+            StopAllCoroutines();
 
-            // Can't unpause the game if isn't on pause screen.
-            if (PauseManager)
-                PauseManager.ControlsEnabled = false;
+            // Hiện Settings mượt mà
+            if (settingsCanvasGroup) StartCoroutine(FadeCanvas(settingsCanvasGroup, 1, true));
+            // Ẩn Pause mượt mà
+            if (pauseCanvasGroup) StartCoroutine(FadeCanvas(pauseCanvasGroup, 0, false));
+
+            // Cực kỳ quan trọng: Để ControlsEnabled = true để phím Esc không bị vô hiệu hóa
+            if (PauseManager) PauseManager.ControlsEnabled = true;
         }
 
+        // Xử lý khi nút menu chính được nhấn
         private void OnPressMainMenuButton()
         {
             if (string.IsNullOrEmpty(MainMenuScene))
                 return;
-
+            Time.timeScale = 1f;
+            if (JUPauseGame.Instance != null)
+            {
+                JUPauseGame.Continue();
+            }
             SceneManager.LoadSceneAsync(MainMenuScene);
-
             // Disable the screen to avoid any user interaction when the game is loading another scene.
             gameObject.SetActive(false);
         }
 
+        // Xử lý khi nút thoát trò chơi được nhấn
         private void OnPressExitGameButton()
         {
             Application.Quit();
         }
 
+        // Kiểm tra và lưu trạng thái hiển thị con trỏ chuột
         private void CheckCursorVisibility()
         {
             if (JUPauseGame.IsPaused || !IsGameFocused)
@@ -271,5 +355,29 @@ namespace JUTPS.UI
             _defaultMouseVisible = Cursor.visible;
             _defaultMouseLock = Cursor.lockState != CursorLockMode.None;
         }
+
+        // Thêm hàm Coroutine xử lý Fade
+        private IEnumerator FadeCanvas(CanvasGroup cg, float targetAlpha, bool interactable)
+        {
+            cg.interactable = interactable;
+            cg.blocksRaycasts = interactable;
+
+            float startAlpha = cg.alpha;
+            float time = 0;
+            while (time < fadeDuration)
+            {
+                time += Time.unscaledDeltaTime;
+                cg.alpha = Mathf.Lerp(startAlpha, targetAlpha, time / fadeDuration);
+                yield return null;
+            }
+            cg.alpha = targetAlpha;
+
+            // Nếu mục tiêu là ẩn đi (alpha = 0), thì sau khi fade xong có thể tắt hẳn để tối ưu
+            if (targetAlpha <= 0)
+            {
+                // cg.gameObject.SetActive(false); // Cân nhắc dòng này nếu bạn muốn tắt hẳn
+            }
+        }
     }
+
 }

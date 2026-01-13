@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 using JUTPS.InputEvents;
 using JUTPSEditor.JUHeader;
@@ -78,6 +78,7 @@ namespace JUTPS
         private void Awake()
         {
 #if UNITY_EDITOR
+            // Thiêt lập lại trạng thái khi thoát chế độ Play trong Editor
             UnityEditor.EditorApplication.playModeStateChanged += OnExitPlayMode;
 #endif
 
@@ -157,6 +158,8 @@ namespace JUTPS
             if (IsPaused) Instance.OnPause.Invoke();
             else Instance.OnContinue.Invoke();
         }
+
+        // Thóat đăng ký sự kiện khi thoát chế độ Play trong Editor
 
 #if UNITY_EDITOR
         private void OnExitPlayMode(UnityEditor.PlayModeStateChange mode)

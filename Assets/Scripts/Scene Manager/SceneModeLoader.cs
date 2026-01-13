@@ -48,6 +48,9 @@ public class SceneModeLoader : MonoBehaviour
             case 3:
                 ModeNameText.text = "MODE GRAVITY SWITCH";
                 break;
+            case 4:
+                ModeNameText.text = "MODE ONLINE";
+                break;
             default:
                 ModeNameText.text = "MODE..."; // Tên mặc định nếu ID không khớp
                 break;

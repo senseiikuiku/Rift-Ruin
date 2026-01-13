@@ -377,14 +377,14 @@ namespace JUTPS.WeaponSystem
                 // >>> Shotgun Shoots
                 for (int i = 0; i < NumberOfShotgunBulletsPerShot; i++)
                 {
-                    //Generate Random Direction
+                    // Random hướng đạn
                     var BulletRotationPrecision = ShootDirection;
                     BulletRotationPrecision.x += Random.Range(-LossOfAccuracyPerShot, LossOfAccuracyPerShot);
                     BulletRotationPrecision.y += Random.Range(-LossOfAccuracyPerShot, LossOfAccuracyPerShot);
                     BulletRotationPrecision.z += Random.Range(-LossOfAccuracyPerShot, LossOfAccuracyPerShot);
                     ShotErrorProbability = ShotErrorProbability + 5 * LossOfAccuracyPerShot;
 
-                    //If raycast collide, apply random direction
+                    // Nếu raycast trúng vật thể, áp dụng hướng ngẫu nhiên
                     if (Physics.Raycast(Shoot_Position.transform.position, BulletRotationPrecision, out CrosshairHit, 500, RaycastingLayers))
                     {
                         Shoot_Position.LookAt(CrosshairHit.point);
@@ -411,7 +411,7 @@ namespace JUTPS.WeaponSystem
                         BulletRotationPrecisionShootgun.z += Random.Range(-LossOfAccuracyPerShot, LossOfAccuracyPerShot);
                         BulletRotationPrecisionShootgun.w += Random.Range(-LossOfAccuracyPerShot, LossOfAccuracyPerShot);
 
-                        //Spawn bullet
+                        // Sinh ra viên đạn
                         var bullet = (GameObject)Instantiate(BulletPrefab, Shoot_Position.position, BulletRotationPrecisionShootgun);
                         if (bullet.TryGetComponent(out Bullet _bullet))
                         {
@@ -430,13 +430,13 @@ namespace JUTPS.WeaponSystem
                 }
             }
 
-            //Update shooting state
+            // Thiêt lập trạng thái bắn súng
             IsUsingItem = true;
 
             //Reset Shoot Direction
             Shoot_Position.localEulerAngles = Vector3.zero;
 
-            //Spawn Muzzle Flash
+            // Muzzle Flash Particle Effect sinh ra khi bắn súng (Hiệu ứng lóe sáng nòng súng)
             if (MuzzleFlashParticlePrefab != null)
             {
                 var muzzleflesh = (GameObject)Instantiate(MuzzleFlashParticlePrefab, Shoot_Position.position, Shoot_Position.rotation, transform);
@@ -444,11 +444,11 @@ namespace JUTPS.WeaponSystem
             }
 
 
-            //Reset Fire Rate
+            // Tải lại Fire Rate và trạng thái sử dụng vật phẩm
             CurrentFireRateToShoot = 0;
             CanUseItem = false;
 
-            //Subtracts Ammunition
+            // Đạn giảm sau mỗi lần bắn Nếu không phải vô hạn
             if (!InfiniteAmmo) BulletsAmounts -= 1;
 
             //Procedural Animation Trigger
@@ -469,15 +469,16 @@ namespace JUTPS.WeaponSystem
                     }
                     GunSlider.localPosition = RecoilSliderPosition;
                 }
-                //Recoil Animation
+                // Độ trễ để tạo hiệu ứng giật súng
                 Invoke("WeaponRecoil", 0.06f);
             }
-
+            // Sự kiện sau khi bắn
             OnShot.Invoke();
         }
+        // Hàm phát sinh vỏ đạn
         public void EmitBulletShell()
         {
-            //Spawn Bullet Casing
+            //Sinh vỏ đạn
             if (BulletCasingPrefab != null)
             {
                 if (IsParticle)
@@ -492,6 +493,8 @@ namespace JUTPS.WeaponSystem
                 }
             }
         }
+
+        // Hàm xử lý giật súng
         public void WeaponRecoil()
         {
             if (CamPivot != null) CamPivot.RecoilReaction(CameraRecoilMultiplier * 20 * RecoilForce);
