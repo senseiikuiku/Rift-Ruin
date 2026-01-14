@@ -788,9 +788,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 996a211b576e4af47a9c443b3d018f77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIButtonSound
-  globalAudioSource: {fileID: 0}
   hoverSound: {fileID: 8300000, guid: 4af9ca4331f48b747b80eba948f41e41, type: 3}
   clickSound: {fileID: 8300000, guid: e1b21823df04b4848bbd3c577553040a, type: 3}
+  sfxTag: {fileID: 11400000, guid: b7f60ffc055fd01479c79dd9351b4dff, type: 2}
 --- !u!1 &377096908095330162
 GameObject:
   m_ObjectHideFlags: 0
@@ -1249,9 +1249,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 996a211b576e4af47a9c443b3d018f77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIButtonSound
-  globalAudioSource: {fileID: 0}
   hoverSound: {fileID: 8300000, guid: 4af9ca4331f48b747b80eba948f41e41, type: 3}
   clickSound: {fileID: 8300000, guid: e1b21823df04b4848bbd3c577553040a, type: 3}
+  sfxTag: {fileID: 11400000, guid: b7f60ffc055fd01479c79dd9351b4dff, type: 2}
 --- !u!1 &675617792924460913
 GameObject:
   m_ObjectHideFlags: 0
@@ -3622,9 +3622,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 996a211b576e4af47a9c443b3d018f77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIButtonSound
-  globalAudioSource: {fileID: 0}
   hoverSound: {fileID: 8300000, guid: 4af9ca4331f48b747b80eba948f41e41, type: 3}
   clickSound: {fileID: 8300000, guid: e1b21823df04b4848bbd3c577553040a, type: 3}
+  sfxTag: {fileID: 11400000, guid: b7f60ffc055fd01479c79dd9351b4dff, type: 2}
 --- !u!1 &2246687192974116822
 GameObject:
   m_ObjectHideFlags: 0
@@ -4848,9 +4848,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 996a211b576e4af47a9c443b3d018f77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIButtonSound
-  globalAudioSource: {fileID: 0}
   hoverSound: {fileID: 8300000, guid: 4af9ca4331f48b747b80eba948f41e41, type: 3}
   clickSound: {fileID: 8300000, guid: e1b21823df04b4848bbd3c577553040a, type: 3}
+  sfxTag: {fileID: 11400000, guid: b7f60ffc055fd01479c79dd9351b4dff, type: 2}
 --- !u!1 &2984108101969885600
 GameObject:
   m_ObjectHideFlags: 0
@@ -6223,9 +6223,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 996a211b576e4af47a9c443b3d018f77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIButtonSound
-  globalAudioSource: {fileID: 0}
   hoverSound: {fileID: 8300000, guid: 4af9ca4331f48b747b80eba948f41e41, type: 3}
   clickSound: {fileID: 8300000, guid: e1b21823df04b4848bbd3c577553040a, type: 3}
+  sfxTag: {fileID: 11400000, guid: b7f60ffc055fd01479c79dd9351b4dff, type: 2}
 --- !u!1 &3727323412019369065
 GameObject:
   m_ObjectHideFlags: 0
@@ -7732,9 +7732,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 996a211b576e4af47a9c443b3d018f77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIButtonSound
-  globalAudioSource: {fileID: 0}
   hoverSound: {fileID: 8300000, guid: 4af9ca4331f48b747b80eba948f41e41, type: 3}
   clickSound: {fileID: 8300000, guid: e1b21823df04b4848bbd3c577553040a, type: 3}
+  sfxTag: {fileID: 11400000, guid: b7f60ffc055fd01479c79dd9351b4dff, type: 2}
 --- !u!1 &4456727058392475244
 GameObject:
   m_ObjectHideFlags: 0
@@ -10910,9 +10910,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 996a211b576e4af47a9c443b3d018f77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIButtonSound
-  globalAudioSource: {fileID: 0}
   hoverSound: {fileID: 8300000, guid: 4af9ca4331f48b747b80eba948f41e41, type: 3}
   clickSound: {fileID: 8300000, guid: e1b21823df04b4848bbd3c577553040a, type: 3}
+  sfxTag: {fileID: 11400000, guid: b7f60ffc055fd01479c79dd9351b4dff, type: 2}
 --- !u!1 &7586859707812484002
 GameObject:
   m_ObjectHideFlags: 0
@@ -11943,9 +11943,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 996a211b576e4af47a9c443b3d018f77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIButtonSound
-  globalAudioSource: {fileID: 0}
   hoverSound: {fileID: 8300000, guid: 4af9ca4331f48b747b80eba948f41e41, type: 3}
   clickSound: {fileID: 8300000, guid: e1b21823df04b4848bbd3c577553040a, type: 3}
+  sfxTag: {fileID: 11400000, guid: b7f60ffc055fd01479c79dd9351b4dff, type: 2}
 --- !u!1 &8000160876539372451
 GameObject:
   m_ObjectHideFlags: 0
@@ -13250,9 +13250,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 996a211b576e4af47a9c443b3d018f77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIButtonSound
-  globalAudioSource: {fileID: 0}
   hoverSound: {fileID: 8300000, guid: 4af9ca4331f48b747b80eba948f41e41, type: 3}
   clickSound: {fileID: 8300000, guid: e1b21823df04b4848bbd3c577553040a, type: 3}
+  sfxTag: {fileID: 11400000, guid: b7f60ffc055fd01479c79dd9351b4dff, type: 2}
 --- !u!1 &9050009507994556529
 GameObject:
   m_ObjectHideFlags: 0
@@ -13425,9 +13425,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 996a211b576e4af47a9c443b3d018f77, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIButtonSound
-  globalAudioSource: {fileID: 0}
   hoverSound: {fileID: 8300000, guid: 4af9ca4331f48b747b80eba948f41e41, type: 3}
   clickSound: {fileID: 8300000, guid: e1b21823df04b4848bbd3c577553040a, type: 3}
+  sfxTag: {fileID: 11400000, guid: b7f60ffc055fd01479c79dd9351b4dff, type: 2}
 --- !u!1 &9152647658303785454
 GameObject:
   m_ObjectHideFlags: 0

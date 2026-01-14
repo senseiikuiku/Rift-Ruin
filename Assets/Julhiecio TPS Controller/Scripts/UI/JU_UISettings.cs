@@ -4,51 +4,54 @@ using UnityEngine.UI;
 using JUTPS.InputEvents;
 using JUTPS.GameSettings;
 using JU;
+using UnityEngine.SceneManagement; // Cần thiết để lấy tên Scene
 
 namespace JUTPS.UI
 {
     /// <summary>
-    /// The game settings screen.
+    /// Màn hình thiết lập cài đặt trong trò chơi (Game settings screen).
     /// </summary>
     public class JU_UISettings : MonoBehaviour
     {
         /// <summary>
-        /// The controls settings screen.
+        /// Màn hình cài đặt điều khiển (Controls settings screen).
         /// </summary>
         [System.Serializable]
         public class ControlsUI
         {
             /// <summary>
-            /// The min camera rotation sensitive, can't be greater than <see cref="MaxRotationSensitive"/>.
+            /// Độ nhạy xoay camera tối thiểu, không thể lớn hơn MaxRotationSensitive.
             /// </summary>
             [Min(0.1f)] public float MinRotationSensitive;
 
             /// <summary>
-            /// The max camera rotation sensitive, can't be less than <see cref="MinRotationSensitive"/>.
+            /// Độ nhạy xoay camera tối đa, không thể nhỏ hơn MinRotationSensitive.
             /// </summary>
             [Min(0.2f)] public float MaxRotationSensitive;
 
             /// <summary>
-            /// The camera rotation sensitive UI slider.
+            /// Thanh trượt (Slider) UI để điều chỉnh độ nhạy xoay camera.
             /// </summary>
             public Slider RotationSensitive;
 
             /// <summary>
-            /// The toggle to invert the camera vertical orientation.
+            /// Nút gạt (Toggle) để đảo ngược hướng xoay dọc của camera.
             /// </summary>
             public Toggle InvertVertical;
 
             /// <summary>
-            /// The toggle to invert the camera horizontal orientation.
+            /// Nút gạt (Toggle) để đảo ngược hướng xoay ngang của camera.
             /// </summary>
             public Toggle InvertHorizontal;
 
+            // Khởi tạo giá trị mặc định cho độ nhạy
             public ControlsUI()
             {
                 MinRotationSensitive = 0.1f;
                 MaxRotationSensitive = 10f;
             }
 
+            // Thiết lập các giá trị ban đầu từ JUGameSettings vào UI
             internal void Setup()
             {
                 if (RotationSensitive)
@@ -56,6 +59,7 @@ namespace JUTPS.UI
                     RotationSensitive.minValue = MinRotationSensitive;
                     RotationSensitive.maxValue = MaxRotationSensitive;
                     RotationSensitive.value = JUGameSettings.CameraSensibility;
+                    // Lắng nghe sự kiện khi kéo Slider để cập nhật cài đặt
                     RotationSensitive.onValueChanged.AddListener(OnChangeCameraSensitive);
                 }
 
@@ -72,45 +76,35 @@ namespace JUTPS.UI
                 }
             }
 
-            private void OnChangeCameraSensitive(float sensitive)
-            {
-                JUGameSettings.CameraSensibility = sensitive;
-            }
-
-            private void OnToggleInvertCameraVertical(bool invert)
-            {
-                JUGameSettings.CameraInvertVertical = invert;
-            }
-
-            private void OnToggleInvertCameraHorizontal(bool invert)
-            {
-                JUGameSettings.CameraInvertHorizontal = invert;
-            }
+            // Các phương thức cập nhật trực tiếp vào hệ thống JUGameSettings
+            private void OnChangeCameraSensitive(float sensitive) => JUGameSettings.CameraSensibility = sensitive;
+            private void OnToggleInvertCameraVertical(bool invert) => JUGameSettings.CameraInvertVertical = invert;
+            private void OnToggleInvertCameraHorizontal(bool invert) => JUGameSettings.CameraInvertHorizontal = invert;
         }
 
         /// <summary>
-        /// The graphics settings screen.
+        /// Màn hình cài đặt đồ họa (Graphics settings screen).
         /// </summary>
         [System.Serializable]
         public class GraphicsUI
         {
             /// <summary>
-            /// The min render scale allowed, can't be greater than <see cref="MaxRenderScale"/>.
+            /// Tỷ lệ render tối thiểu (độ phân giải nội bộ), không thể lớn hơn MaxRenderScale.
             /// </summary>
             [Min(0.1f)] public float MinRenderScale;
 
             /// <summary>
-            /// The max render scale allowed, can't be less than <see cref="MinRenderScale"/>
+            /// Tỷ lệ render tối đa, không thể nhỏ hơn MinRenderScale.
             /// </summary>
             [Min(0.2f)] public float MaxRenderScale;
 
             /// <summary>
-            /// The quality settings UI dropdown.
+            /// Danh sách thả xuống (Dropdown) để chọn chất lượng đồ họa tổng quát.
             /// </summary>
             public Dropdown Quality;
 
             /// <summary>
-            /// The render scale UI slider.
+            /// Thanh trượt (Slider) để điều chỉnh tỷ lệ render (Render Scale).
             /// </summary>
             public Slider RenderScale;
 
@@ -137,57 +131,54 @@ namespace JUTPS.UI
                 }
             }
 
-            private void OnChangeQuality(int qualityIndex)
-            {
-                JUGameSettings.GraphicsQuality = qualityIndex;
-            }
-
-            private void OnChangeRenderScale(float scale)
-            {
-                JUGameSettings.RenderScale = scale;
-            }
+            private void OnChangeQuality(int qualityIndex) => JUGameSettings.GraphicsQuality = qualityIndex;
+            private void OnChangeRenderScale(float scale) => JUGameSettings.RenderScale = scale;
         }
 
         /// <summary>
-        /// The audio settings screen.
+        /// Màn hình cài đặt âm thanh (Audio settings screen).
         /// </summary>
         [System.Serializable]
         public class AudioUI
         {
             /// <summary>
-            /// Audio container.
+            /// Thùng chứa loại âm thanh (Audio container).
+            /// Dùng để định nghĩa slider cho từng nhóm như SFX, Music, UI...
             /// </summary>
             [System.Serializable]
             public struct AudioTypeContainer
             {
-                [SerializeField] internal string Name;
+                [SerializeField] internal string Name; // Tên hiển thị trong Inspector
 
                 /// <summary>
-                /// The slider used to control the audio volume.
+                /// Slider điều khiển âm lượng của loại âm thanh này.
                 /// </summary>
                 public Slider VolumeSlider;
 
                 /// <summary>
-                /// The audio to control.
+                /// Thẻ định danh (Tag) để hệ thống biết đây là loại âm thanh nào.
                 /// </summary>
                 public JUTag Tag;
             }
 
             /// <summary>
-            /// The min audio volume, can be greater than <see cref="MaxVolume"/>.
+            /// Âm lượng tối thiểu (0-1).
             /// </summary>
             [Range(0, 1)] public float MinVolume;
 
             /// <summary>
-            /// The max audio volume, can be less than <see cref="MinVolume"/>.
+            /// Âm lượng tối đa (0-1).
             /// </summary>
             [Range(0, 1)] public float MaxVolume;
 
             /// <summary>
-            /// The UI slider to control the audio volume.
+            /// Slider điều khiển âm lượng tổng quát (Master Volume).
             /// </summary>
             public Slider GeneralVolume;
 
+            /// <summary>
+            /// Danh sách các slider cho từng loại âm thanh riêng biệt.
+            /// </summary>
             public AudioTypeContainer[] Volumes;
 
             public AudioUI()
@@ -198,6 +189,7 @@ namespace JUTPS.UI
 
             internal void Setup()
             {
+                // Thiết lập Slider âm lượng tổng
                 if (GeneralVolume)
                 {
                     GeneralVolume.minValue = MinVolume;
@@ -210,21 +202,23 @@ namespace JUTPS.UI
                     });
                 }
 
+                // Thiết lập Slider cho từng nhóm âm thanh cụ thể (như Nhạc nền, Hiệu ứng...)
                 foreach (var volume in Volumes)
                 {
                     var slider = volume.VolumeSlider;
                     var tag = volume.Tag;
 
-                    if (!slider)
-                        continue;
+                    if (!slider) continue;
 
-                    Debug.Assert(tag, $"{nameof(JU_UISettings)}: Audio Tag missing for audio volume slider: {volume.Name}." +
-                                        "The tag is used to set the correct volume for each audio type, like sfx, ui or music.");
+                    // Kiểm tra lỗi nếu quên chưa gán Tag trong Unity Editor
+                    Debug.Assert(tag, $"{nameof(JU_UISettings)}: Thiếu Audio Tag cho slider: {volume.Name}. " +
+                                     "Tag này dùng để xác định đúng loại âm lượng như SFX, UI hoặc Music.");
 
                     slider.value = JUGameSettings.GetAudioVolume(tag);
                     slider.minValue = MinVolume;
                     slider.maxValue = MaxVolume;
 
+                    // Lưu giá trị vào JUGameSettings mỗi khi slider thay đổi
                     slider.onValueChanged.AddListener(value =>
                     {
                         JUGameSettings.SetAudioVolume(tag, value);
@@ -234,57 +228,51 @@ namespace JUTPS.UI
         }
 
         /// <summary>
-        /// Use inputs to exit of the pause screen instead of use UI buttons.
+        /// Hành động nhấn phím (Input) để thoát màn hình cài đặt thay vì dùng chuột nhấn nút.
+        /// Thường là phím ESC hoặc phím Back trên tay cầm.
         /// </summary>
         public MultipleActionEvent CloseScreenAction;
 
         /// <summary>
-        /// The exit settings screen UI button.
+        /// Nút UI (Button) dùng để thoát cài đặt.
         /// </summary>
         public Button ExitButton;
 
         /// <summary>
-        /// An event called when the screen is closed.
+        /// Sự kiện (Event) được gọi khi màn hình bắt đầu đóng lại.
         /// </summary>
         public UnityEvent OnClose;
 
-        /// <summary>
-        /// The controls settings screen.
-        /// </summary>
+        // Các biến tham chiếu đến 3 mảng cài đặt chính
         public ControlsUI ControlsScreen;
-
-        /// <summary>
-        /// The graphics settings screen
-        /// </summary>
         public GraphicsUI GraphicsScreen;
-
-        /// <summary>
-        /// The audio settings screen.
-        /// </summary>
         public AudioUI AudioScreen;
 
         private void Awake()
         {
-            Setup();
+            Setup(); // Khởi tạo toàn bộ UI khi object bắt đầu thức tỉnh
         }
 
         private void OnEnable()
         {
-            CloseScreenAction.Enable();
+            CloseScreenAction.Enable(); // Kích hoạt lắng nghe phím bấm khi UI hiển thị
         }
 
         private void OnDisable()
         {
-            CloseScreenAction.Disable();
+            CloseScreenAction.Disable(); // Tắt lắng nghe phím bấm khi UI ẩn
         }
 
         private void Setup()
         {
+            // Đăng ký sự kiện click chuột cho nút thoát
             if (ExitButton)
                 ExitButton.onClick.AddListener(OnPressExitButton);
 
+            // Đăng ký sự kiện nhấn phím (phím tắt) cho hành động thoát
             CloseScreenAction.OnButtonsDown.AddListener(OnPressExitButton);
 
+            // Chạy Setup cho từng phân mục cài đặt
             ControlsScreen.Setup();
             GraphicsScreen.Setup();
             AudioScreen.Setup();
@@ -296,23 +284,30 @@ namespace JUTPS.UI
         }
 
         /// <summary>
-        /// Close the settings screen if is opened.
+        /// Thực hiện đóng màn hình cài đặt nếu nó đang mở.
         /// </summary>
         public void Close()
         {
+            // KIỂM TRA: Nếu đang ở scene MenuGame thì thoát luôn, không thực hiện ẩn/đóng
+            if (SceneManager.GetActiveScene().name == "MenuGame")
+            {
+                // Debug.Log("Đang ở MenuGame, không cho phép dùng ESC để ẩn Settings!");
+                return;
+            }
+
             // Kiểm tra nếu object đang Active thì mới xử lý
             if (!gameObject.activeSelf)
                 return;
 
-            // Thay vì dùng SetActive(false), ta gọi JU_UIPause để thực hiện Fade
+            // Kiểm tra xem có Instance của màn hình Tạm dừng (Pause) hay không
             if (JUTPS.UI.JU_UIPause.Instance != null)
             {
-                // Gọi Event để JU_UIPause biết và bắt đầu giảm Alpha về 0
+                // Thay vì tắt object ngay lập tức, gọi Event để JU_UIPause thực hiện hiệu ứng Fade Out (mờ dần)
                 OnClose.Invoke();
             }
             else
             {
-                // Trường hợp phòng hờ nếu không tìm thấy JU_UIPause thì mới tắt
+                // Nếu không có hệ thống Pause đi kèm, tắt trực tiếp object này
                 gameObject.SetActive(false);
             }
         }

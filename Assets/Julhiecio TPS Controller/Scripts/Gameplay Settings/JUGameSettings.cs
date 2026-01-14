@@ -1,11 +1,11 @@
-using JU;
+﻿using JU;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace JUTPS.GameSettings
 {
     /// <summary>
-    /// The game settings system, apply game configurations.
+    /// Hệ thống cài đặt trò chơi, áp dụng các cấu hình trò chơi.
     /// </summary>
     public class JUGameSettings : MonoBehaviour
     {
@@ -25,7 +25,7 @@ namespace JUTPS.GameSettings
 #endif
 
         /// <summary>
-        /// Called when the settings are changed.
+        /// Được gọi khi các cài đặt thay đổi.
         /// </summary>
         public static event UnityAction OnChangeSettings;
 
@@ -41,7 +41,7 @@ namespace JUTPS.GameSettings
         }
 
         /// <summary>
-        /// The render scale resolution multiplier, a value between 0.1 and 1 based on the window size.
+        /// Hệ số nhân độ phân giải (render scale), giá trị từ 0.1 đến 1 dựa trên kích thước cửa sổ.
         /// </summary>
         public static float RenderScale
         {
@@ -61,7 +61,7 @@ namespace JUTPS.GameSettings
         }
 
         /// <summary>
-        /// The current graphics settings.
+        /// Cài đặt chất lượng đồ họa hiện tại.
         /// </summary>
         public static int GraphicsQuality
         {
@@ -79,7 +79,7 @@ namespace JUTPS.GameSettings
         }
 
         /// <summary>
-        /// Invert vertical camera orientation.
+        /// Đảo ngược hướng nhìn dọc của camera.
         /// </summary>
         public static bool CameraInvertVertical
         {
@@ -95,7 +95,7 @@ namespace JUTPS.GameSettings
         }
 
         /// <summary>
-        /// Invert horizontal camera orientation.
+        /// Đảo ngược hướng nhìn ngang của camera.
         /// </summary>
         public static bool CameraInvertHorizontal
         {
@@ -111,7 +111,7 @@ namespace JUTPS.GameSettings
         }
 
         /// <summary>
-        /// The camera rotation sensibility with user inputs.
+        /// Độ nhạy xoay camera theo đầu vào của người dùng.
         /// </summary>
         public static float CameraSensibility
         {
@@ -131,7 +131,7 @@ namespace JUTPS.GameSettings
         }
 
         /// <summary>
-        /// The game audio volume.
+        /// Âm lượng âm thanh chung của trò chơi.
         /// </summary>
         public static float AudioGeneralVolume
         {
@@ -159,7 +159,7 @@ namespace JUTPS.GameSettings
         }
 
         /// <summary>
-        /// Apply the game settings.
+        /// Áp dụng các cài đặt trò chơi.
         /// </summary>
         public static void ApplySettings()
         {
@@ -171,25 +171,25 @@ namespace JUTPS.GameSettings
         }
 
         /// <summary>
-        /// Set the volume for a specific audio type, like music, sfx, ui...
+        /// Thiết lập âm lượng cho một loại âm thanh cụ thể, như nhạc (music), hiệu ứng (sfx), giao diện (ui)...
         /// </summary>
         /// <param name="audioTag"></param>
         /// <returns></returns>
         public static void SetAudioVolume(JUTag audioTag, float volume)
         {
-            Debug.Assert(audioTag, "Audio Tag missing");
+            Debug.Assert(audioTag, "Thiếu Audio Tag");
             PlayerPrefs.SetFloat(GetAudioVolumeKey(audioTag), volume);
             OnChangeSettings?.Invoke();
         }
 
         /// <summary>
-        /// Gets the volume for a specific audio type, like music, sfx, ui...
+        /// Lấy âm lượng của một loại âm thanh cụ thể, như nhạc (music), hiệu ứng (sfx), giao diện (ui)...
         /// </summary>
         /// <param name="audioTag"></param>
         /// <returns></returns>
         public static float GetAudioVolume(JUTag audioTag)
         {
-            Debug.Assert(audioTag, "Audio Tag missing");
+            Debug.Assert(audioTag, "Thiếu Audio Tag");
             return PlayerPrefs.GetFloat(GetAudioVolumeKey(audioTag), 1f);
         }
 
@@ -215,7 +215,7 @@ namespace JUTPS.GameSettings
 
             };
 
-            //On mobile devices the width and height are inverted
+            // Trên các thiết bị di động, chiều rộng và chiều cao bị đảo ngược
             if (!IsMobile)
             {
 #if UNITY_2022_3_OR_NEWER
@@ -246,8 +246,8 @@ namespace JUTPS.GameSettings
         }
 
         /// <summary>
-        /// Reset Game Settings.
-        /// Delete all playerprefs.
+        /// Đặt lại Cài đặt trò chơi (Reset).
+        /// Xóa tất cả dữ liệu PlayerPrefs.
         /// </summary>
         [ContextMenu("Reset Game Settings", false, 100)]
         public void ResetSettings()
