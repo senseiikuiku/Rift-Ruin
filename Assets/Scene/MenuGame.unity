@@ -9442,7 +9442,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: MODE FPS
+  m_Text: MODE TPS
 --- !u!222 &1185747870
 CanvasRenderer:
   m_ObjectHideFlags: 0

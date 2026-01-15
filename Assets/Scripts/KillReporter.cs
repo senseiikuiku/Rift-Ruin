@@ -1,12 +1,23 @@
-﻿using JUTPS;
-using UnityEngine;
+﻿using JU;
+using JUTPS;
+using JUTPS.GameSettings;
 using System.Collections;
+using UnityEngine;
 public class KillReporter : MonoBehaviour
 {
     private JUHealth juHealth;
 
+    public AudioClip winSound;
+    public JUTag sfxTag;// Gán tag SFX hoặc UI để lấy âm lượng từ Settings
+
+    // Biến static dùng chung cho tất cả các Zombie, đảm bảo nhạc thắng chỉ phát 1 lần
+    private static bool _hasPlayedWinSound = false;
+
     void Start()
     {
+        // Reset lại biến khi bắt đầu màn chơi mới
+        _hasPlayedWinSound = false;
+
         juHealth = GetComponent<JUHealth>();
         if (juHealth != null)
         {
@@ -25,25 +36,68 @@ public class KillReporter : MonoBehaviour
             if (UIManager.Instance != null &&
                 KillManager.Instance.kills >= UIManager.Instance.targetKills)
             {
-                // KÍCH HOẠT CỜ TẠM DỪNG ĐẾM KILL
-                KillManager.Instance.SetFinisherActive(true);
-
-                foreach (GameObject spawner in EnemyFinisher.Instance.EnemySpawner)
+                // KIỂM TRA: Nếu chưa phát nhạc thắng thì mới thực hiện logic thắng
+                if (!_hasPlayedWinSound)
                 {
-                    spawner.SetActive(false);
+                    _hasPlayedWinSound = true; // Khóa lại ngay lập tức
+
+                    // 1. Dừng Spawner
+                    KillManager.Instance.SetFinisherActive(true);
+                    if (EnemyFinisher.Instance != null)
+                    {
+                        foreach (GameObject spawner in EnemyFinisher.Instance.EnemySpawner)
+                        {
+                            if (spawner != null) spawner.SetActive(false);
+                        }
+                        EnemyFinisher.Instance.ExecuteFinisher();
+                    }
+
+                    // 2. Slowmotion
+                    JUTPS.FX.JUSlowmotion.DoSlowMotion(0.1f, 3f);
+
+                    // 3. PHÁT ÂM THANH CHIẾN THẮNG THEO TAG
+                    PlayWinSound();
+
+                    // 4. Hiện UI sau delay
+                    StartCoroutine(ShowWinAfterDelay(5f));
                 }
-
-                // Slowmotion khi giết con cuối cùng
-                JUTPS.FX.JUSlowmotion.DoSlowMotion(0.1f, 3f);
-
-                // KÍCH HOẠT CHỨC NĂNG GIẢM MÁU TỪ TỪ CHO ZOMBIE CÒN LẠI
-                // (Sẽ tìm và áp dụng sát thương liên tục lên tất cả JUHealth còn lại)
-                EnemyFinisher.Instance.ExecuteFinisher();
-
-                // Gọi coroutine để hiển thị UI Win sau 3 giây
-                StartCoroutine(ShowWinAfterDelay(5f));
             }
         }
+    }
+
+    private void PlayWinSound()
+    {
+        if (winSound == null) return;
+
+        // Lấy âm lượng từ JUGameSettings dựa trên JUTag bạn đã chọn
+        float volume = JUGameSettings.GetAudioVolume(sfxTag);
+
+        // Tạo một GameObject tạm thời để phát âm thanh (đảm bảo nghe rõ hơn PlayClipAtPoint)
+        GameObject soundObj = new GameObject("WinSoundTemp");
+        AudioSource source = soundObj.AddComponent<AudioSource>();
+
+        source.clip = winSound;
+        source.volume = volume;
+        source.playOnAwake = false;
+        source.spatialBlend = 0f; // Đặt là 0 để nhạc thắng phát đều 2 tai (2D), không bị nhỏ khi đứng xa xác zombie
+
+        // --- QUAN TRỌNG: Bỏ qua lệnh Pause của hệ thống Audio ---
+        source.ignoreListenerPause = true;
+
+        source.Play();
+
+        Debug.Log("Đang phát âm thanh chiến thắng với âm lượng: " + volume);
+
+        // --- KHÔNG DÙNG Destroy(soundObj, winSound.length) vì game đã Pause ---
+        // Phải dùng Coroutine xóa theo thời gian thực (Realtime)
+        StartCoroutine(DestroyWinSoundRealtime(soundObj, winSound.length));
+    }
+
+    // Coroutine xóa Object âm thanh bất kể game có Pause hay không
+    private IEnumerator DestroyWinSoundRealtime(GameObject obj, float delay)
+    {
+        yield return new WaitForSecondsRealtime(delay);
+        if (obj != null) Destroy(obj);
     }
 
     private IEnumerator ShowWinAfterDelay(float delay)

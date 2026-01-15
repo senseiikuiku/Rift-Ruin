@@ -4326,8 +4326,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc90c4871dbf2114391082841357e3f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDeathHandler
-  juHealth: {fileID: 0}
+  juHealth: {fileID: 1543098626020419929}
   checkPlayerLive: 0
+  loseSound: {fileID: 8300000, guid: 991ed85a95b365649bcd3d8b4c259048, type: 3}
+  sfxTag: {fileID: 11400000, guid: b7f60ffc055fd01479c79dd9351b4dff, type: 2}
 --- !u!114 &9067576891276609948
 MonoBehaviour:
   m_ObjectHideFlags: 0
