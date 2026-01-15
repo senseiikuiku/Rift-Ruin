@@ -20194,6 +20194,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5479cab4ae27bc458de9e8bbcd05269, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KillReporter
+  winSound: {fileID: 0}
+  sfxTag: {fileID: 0}
 --- !u!114 &343886134
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -86287,7 +86289,7 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: 2b865edd84b759e459d629ae02772bdb,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.95
+      value: 10.01
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 2b865edd84b759e459d629ae02772bdb,
         type: 3}
@@ -88877,6 +88879,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5479cab4ae27bc458de9e8bbcd05269, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KillReporter
+  winSound: {fileID: 0}
+  sfxTag: {fileID: 0}
 --- !u!114 &1480559484
 MonoBehaviour:
   m_ObjectHideFlags: 0

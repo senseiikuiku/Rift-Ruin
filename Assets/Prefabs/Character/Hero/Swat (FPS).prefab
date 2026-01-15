@@ -14578,7 +14578,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 105217
   BulletsPerMagazine: 38
-  TotalBullets: 1
+  TotalBullets: 180
   BulletsAmounts: 38
   NumberOfShotgunBulletsPerShot: 12
   InfiniteAmmo: 0

@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
-using JU; // Thêm namespace của JU
+using JU;
+using JUTPS.GameSettings; // Đảm bảo có namespace này
 
 public class UIButtonSound : MonoBehaviour, IPointerEnterHandler, IPointerClickHandler
 {
@@ -10,16 +11,13 @@ public class UIButtonSound : MonoBehaviour, IPointerEnterHandler, IPointerClickH
     public AudioClip clickSound;
 
     [Header("Cấu hình JU")]
-    // Gán JUTag có tên là "SFX" vào đây trong Inspector
     public JUTag sfxTag;
 
-    // Khi di chuột vào
     public void OnPointerEnter(PointerEventData eventData)
     {
         PlayJUSound(hoverSound);
     }
 
-    // Khi click
     public void OnPointerClick(PointerEventData eventData)
     {
         PlayJUSound(clickSound);
@@ -29,15 +27,30 @@ public class UIButtonSound : MonoBehaviour, IPointerEnterHandler, IPointerClickH
     {
         if (clip == null) return;
 
-        // Lấy âm lượng SFX hiện tại từ cấu hình JUGameSettings
-        // Nếu không có tag, mặc định sẽ là 1 (âm lượng tối đa)
-        float sfxVolume = JUTPS.GameSettings.JUGameSettings.GetAudioVolume(sfxTag);
+        // Lấy âm lượng SFX từ JUGameSettings
+        float sfxVolume = JUGameSettings.GetAudioVolume(sfxTag);
 
-        // Phát âm thanh thông qua JU Audio System để nó tự quản lý
-        // Cách đơn giản nhất là tạo một AudioSource tạm thời hoặc dùng Static Class của JU
-        // Ở đây chúng ta phát tại vị trí camera hoặc vị trí nút với âm lượng đã nhân với sfxVolume
-        AudioSource.PlayClipAtPoint(clip, Camera.main.transform.position, sfxVolume);
+        // TẠO OBJECT ÂM THANH TẠM THỜI (Tối ưu hơn PlayClipAtPoint)
+        GameObject soundObj = new GameObject("ButtonSoundTemp");
+        AudioSource source = soundObj.AddComponent<AudioSource>();
 
-        // Ghi chú: Nếu JU có JUAudioController.Play(clip, tag), bạn nên dùng cái đó sẽ chuyên nghiệp hơn.
+        source.clip = clip;
+        source.volume = sfxVolume;
+        source.spatialBlend = 0f; // Đặt là âm thanh 2D để đứng đâu cũng nghe rõ
+
+        // QUAN TRỌNG: Giúp âm thanh nút bấm kêu ngay cả khi Game đang Pause
+        source.ignoreListenerPause = true;
+
+        source.Play();
+
+        // Xóa object sau khi phát xong (Sử dụng Coroutine để xóa theo thời gian thực)
+        StartCoroutine(DestroySoundRealtime(soundObj, clip.length));
+    }
+
+    private System.Collections.IEnumerator DestroySoundRealtime(GameObject obj, float delay)
+    {
+        // Đợi theo thời gian thực (không bị ảnh hưởng bởi pause game)
+        yield return new WaitForSecondsRealtime(delay);
+        if (obj != null) Destroy(obj);
     }
 }

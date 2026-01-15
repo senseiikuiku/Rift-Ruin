@@ -1,5 +1,6 @@
-﻿using UnityEngine;
-using JU.CharacterSystem.AI;
+﻿using JU.CharacterSystem.AI;
+using JUTPS;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 /// <summary>
@@ -10,6 +11,10 @@ public class ZombieRoarController : MonoBehaviour
     // Cần một tham chiếu đến script AI chính của Zombie
     [Tooltip("Tham chiếu đến script JU_AI_Zombie trên cùng GameObject.")]
     public JU_AI_Zombie ZombieAI;
+
+    // THÊM: Tham chiếu đến hệ thống máu
+    [Tooltip("Tham chiếu đến script JUHealth của Zombie")]
+    public JUHealth ZombieHealth;
 
     [Header("Audio Components")]
     [Tooltip("AudioSource sẽ phát các âm thanh gầm gừ")]
@@ -47,6 +52,9 @@ public class ZombieRoarController : MonoBehaviour
             RoarAudioSource = GetComponent<AudioSource>();
         }
 
+        // TỰ ĐỘNG LẤY JUHealth nếu chưa gán
+        if (!ZombieHealth) ZombieHealth = GetComponent<JUHealth>();
+
         // Thiết lập thời gian gầm gừ ban đầu
         _nextRoarTime = Time.time + Random.Range(MinAmbientRoarInterval, MaxAmbientRoarInterval);
     }
@@ -75,6 +83,16 @@ public class ZombieRoarController : MonoBehaviour
     {
         if (!ZombieAI || !RoarAudioSource)
             return;
+
+        // ĐIỀU KIỆN QUAN TRỌNG: Nếu Zombie đã chết thì dừng mọi âm thanh gầm gừ
+        if (ZombieHealth.IsDead)
+        {
+            if (RoarAudioSource.isPlaying)
+            {
+                RoarAudioSource.Stop();
+            }
+            return; // Thoát hàm Update, không chạy logic gầm gừ bên dưới nữa
+        }
 
         UpdateRoarSounds(ZombieAI.CurrentState);
     }

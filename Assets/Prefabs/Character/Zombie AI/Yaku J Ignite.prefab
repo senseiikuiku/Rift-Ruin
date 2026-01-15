@@ -2863,6 +2863,7 @@ GameObject:
   - component: {fileID: 8315102145261054743}
   - component: {fileID: 2950819491428227392}
   - component: {fileID: 2609048913558647979}
+  - component: {fileID: 5817464971001278427}
   - component: {fileID: 1854366109773275482}
   m_Layer: 9
   m_Name: Yaku J Ignite
@@ -3790,6 +3791,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::KillReporter
   winSound: {fileID: 8300000, guid: 10cfa95e1cef1b24f87e28db25ce3778, type: 3}
   sfxTag: {fileID: 11400000, guid: b7f60ffc055fd01479c79dd9351b4dff, type: 2}
+--- !u!114 &5817464971001278427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6738956657108580019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ce799922ded21d42a3244e57611c180, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ZombieRoarController
+  ZombieAI: {fileID: 2950819491428227392}
+  RoarAudioSource: {fileID: 8475891162830196181}
+  AmbientRoarAudioClipList:
+  - {fileID: 8300000, guid: ce1cbdaef88f12e49a01fca3b323935b, type: 3}
+  AggressiveRoarAudioClipList:
+  - {fileID: 8300000, guid: d31af09d95e6abd4faa3cf00959bcc30, type: 3}
+  MinAmbientRoarInterval: 5
+  MaxAmbientRoarInterval: 15
 --- !u!114 &1854366109773275482
 MonoBehaviour:
   m_ObjectHideFlags: 0

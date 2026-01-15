@@ -17011,6 +17011,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5479cab4ae27bc458de9e8bbcd05269, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KillReporter
+  winSound: {fileID: 0}
+  sfxTag: {fileID: 0}
 --- !u!114 &892892130
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21883,6 +21885,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b5479cab4ae27bc458de9e8bbcd05269, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KillReporter
+  winSound: {fileID: 0}
+  sfxTag: {fileID: 0}
 --- !u!114 &1003861239
 MonoBehaviour:
   m_ObjectHideFlags: 0
